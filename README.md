@@ -4,4 +4,4 @@ Get address from GPS coordinates
 
 ## Prerequisite
 
-You must Google Maps API Key
+You must have Google Maps API Key
