@@ -1,0 +1,11 @@
+provider:
+  name: faas
+  gateway: http://localhost:8080
+
+functions:
+  reverse-geocoding:
+    lang: dockerfile
+    handler: ./
+    image: saidsef/faas-reverse-geocoding
+    environment:
+     KEY: <api-key>
