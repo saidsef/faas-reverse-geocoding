@@ -30,5 +30,5 @@ curl -d '{"lat":"41.40338","lng":"2.17403"}' http://localhost:8080/function/reve
 from requests import post
 data='{"lat":"41.40338","lng":"2.17403"}'
 r = post('http://localhost:8080/function/reverse-geocoding', data=data)
-print(r)
+print(r.text)
 ```
