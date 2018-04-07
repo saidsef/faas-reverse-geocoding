@@ -8,4 +8,4 @@ functions:
     handler: ./
     image: saidsef/faas-reverse-geocoding
     environment:
-     KEY: <api-key>
+     KEY: <google-maps-token>
