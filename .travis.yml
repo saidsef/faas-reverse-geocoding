@@ -1,0 +1,21 @@
+services:
+  - docker
+laguage: go
+go:
+  - "1.x"
+  - "1.8"
+  - "1.10.x"
+  - master
+install: true
+before_script:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - sudo cat /etc/default/docker
+script:
+  - docker version
+  - ./build.sh $TRAVIS_BUILD_NUMBER
+notifications:
+  email: true
+  on_success: always
+  on_failure: change
+after_success:
+  - echo "All done!"
