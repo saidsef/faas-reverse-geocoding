@@ -10,7 +10,7 @@ RUN apk add --no-cache curl && \
 
 ###############################################################################
 
-FROM alpine:3.6
+FROM alpine:3.7
 MAINTAINER Said Sef <saidsef@gmail.com>
 
 COPY --from=builder /app/geocode /usr/bin/
