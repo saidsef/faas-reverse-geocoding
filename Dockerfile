@@ -1,11 +1,13 @@
 FROM golang:1.9-alpine AS builder
 MAINTAINER Said Sef <saidsef@gmail.com>
 
+ENV OPEN_FAAS 0.8.3
+
 WORKDIR /app
 COPY geocode.go /app/
 RUN apk add --no-cache curl && \
     go build geocode.go && \
-    curl -sL https://github.com/openfaas/faas/releases/download/0.7.8/fwatchdog > /usr/bin/fwatchdog && \
+    curl -sL https://github.com/openfaas/faas/releases/download/${OPEN_FAAS}/fwatchdog > /usr/bin/fwatchdog && \
     chmod ag+rwx /app/geocode /usr/bin/fwatchdog
 
 ###############################################################################
