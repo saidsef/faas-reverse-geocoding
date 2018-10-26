@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Coordinates struct {
