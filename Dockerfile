@@ -5,7 +5,7 @@ ENV OPEN_FAAS 0.8.3
 
 WORKDIR /app
 COPY geocode.go /app/
-RUN apk add --no-cache curl && \
+RUN apk add --no-cache curl git && \
     go get github.com/joho/godotenv/autoload && \
     go build geocode.go && \
     curl -sL https://github.com/openfaas/faas/releases/download/${OPEN_FAAS}/fwatchdog > /usr/bin/fwatchdog && \
