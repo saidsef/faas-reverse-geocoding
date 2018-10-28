@@ -1,7 +1,7 @@
 FROM golang:1.11-alpine AS builder
 MAINTAINER Said Sef <saidsef@gmail.com>
 
-ENV OPEN_FAAS 0.8.3
+ENV OPEN_FAAS 0.9.8
 
 WORKDIR /app
 COPY geocode.go /app/
