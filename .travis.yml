@@ -1,5 +1,9 @@
-services:
-  - docker
+dist: xenial
+sudo: required
+branches:
+  only:
+  - master
+  - "/.*/"
 laguage: go
 go:
   - "1.x"
@@ -8,14 +12,11 @@ go:
   - master
 install: true
 before_script:
-  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-  - sudo cat /etc/default/docker
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 script:
   - docker version
   - ./build.sh $TRAVIS_BUILD_NUMBER
 notifications:
   email: true
-  on_success: always
-  on_failure: change
 after_success:
   - echo "All done!"
