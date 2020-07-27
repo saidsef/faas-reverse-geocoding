@@ -1,4 +1,4 @@
-FROM golang:1.11-alpine AS builder
+FROM golang:1.13-alpine AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com>"
 
 ENV OPEN_FAAS 0.9.8
