@@ -1,9 +1,7 @@
 OS := $(shell uname)
 
 preview:
-	helm init --client-only
-	helm repo add chartmuseum http://jenkins-x-chartmuseum:8080
-	helm repo add chartmuseum http://chartmuseum.jenkins-x.io
+	helm init
 ifeq ($(OS),Darwin)
 	sed -i "" -e "s/version:.*/version: $(PREVIEW_VERSION)/" Chart.yaml
 	sed -i "" -e "s/version:.*/version: $(PREVIEW_VERSION)/" ../*/Chart.yaml
