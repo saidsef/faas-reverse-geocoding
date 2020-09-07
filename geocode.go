@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	
+
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -16,18 +16,15 @@ var (
 	key = os.Getenv("KEY")
 )
 
+// Coordinates set Lat and Long
 type Coordinates struct {
 	Lat  string `json:"lat"`
 	Long string `json:"lng"`
 }
 
 func main() {
-	if key == "" {
-		fmt.Println("key is missing")
-		return
-	}
-	if len(strings.TrimSpace(key)) == 0 {
-		fmt.Println("key is empty")
+	if key == "" || len(strings.TrimSpace(key)) == 0 {
+		fmt.Println("key is missing, please set env var `KEY`")
 		return
 	}
 
