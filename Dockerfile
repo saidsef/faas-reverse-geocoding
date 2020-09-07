@@ -1,7 +1,7 @@
-FROM golang:1.13-alpine AS builder
+FROM golang:1.15-alpine AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com>"
 
-ENV OPEN_FAAS 0.9.8
+ENV OPEN_FAAS 0.18.18
 
 WORKDIR /app
 COPY geocode.go /app/
@@ -14,7 +14,7 @@ RUN apk add --no-cache curl git && \
 ###############################################################################
 
 FROM alpine:3.8
-LABEL maintainer="Said Sef <saidsef@gmail.com>"
+LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 COPY --from=builder /app/geocode /usr/bin/
 COPY --from=builder /usr/bin/fwatchdog /usr/bin/
