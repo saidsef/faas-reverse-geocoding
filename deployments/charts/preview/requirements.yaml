@@ -1,5 +1,0 @@
-
-dependencies:
-- alias: preview
-  name: faas-reverse-geocoding
-  repository: file://../faas-reverse-geocoding
