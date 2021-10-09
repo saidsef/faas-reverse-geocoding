@@ -16,13 +16,13 @@ fi
 
 build() {
   echo "Building image"
-  docker build -t saidsef/faas-reverse-geocoding .
-  docker tag saidsef/faas-reverse-geocoding saidsef/faas-reverse-geocoding:${BUILD_ID}
+  docker build -t docker.io/saidsef/faas-reverse-geocoding .
+  docker tag docker.io/saidsef/faas-reverse-geocoding docker.io/saidsef/faas-reverse-geocoding:${BUILD_ID}
 }
 
 push() {
   echo "Pushing image"
-  docker push saidsef/faas-reverse-geocoding
+  docker push docker.io/saidsef/faas-reverse-geocoding
 }
 
 main() {
