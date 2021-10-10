@@ -2,7 +2,7 @@ SHELL := /bin/bash
 GO := GO15VENDOREXPERIMENT=1 go
 NAME := faas-reverse-geocoding
 OS := $(shell uname)
-MAIN_GO := main.go
+MAIN_GO := geocode.go
 ROOT_PACKAGE := $(GIT_PROVIDER)/saidsef/$(NAME)
 GO_VERSION := $(shell $(GO) version | sed -e 's/^[^0-9.]*\([0-9.]*\).*/\1/')
 PACKAGE_DIRS := $(shell $(GO) list ./... | grep -v /vendor/)
@@ -32,10 +32,13 @@ fmt:
 	@([[ ! -z "$(FORMATTED)" ]] && printf "Fixed unformatted files:\n$(FORMATTED)") || true
 
 clean:
-	rm -rf build release
+	rm -rf build release bin
 
 linux:
-	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=amd64 $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME) $(MAIN_GO)
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=amd64 $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME)-amd64 $(MAIN_GO)
+
+arm64:
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=arm64 $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME)-arm64 $(MAIN_GO)
 
 .PHONY: release clean
 
