@@ -5,8 +5,10 @@ ENV PORT ${PORT:-8080}
 
 WORKDIR /app
 COPY geocode.go /app/
+COPY go.mod /app/
+COPY go.sum /app/
 RUN apk add --no-cache curl git && \
-    go get github.com/prometheus/client_golang && \
+    go get github.com/prometheus/client_golang/prometheus/promhttp && \
     go build geocode.go
 
 FROM alpine:3
