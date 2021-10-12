@@ -1,34 +1,34 @@
 # Golang Reverse GeoCoding
 
-Get address from GPS coordinates
+Reverse geocoding is used to find places or addresses near a latitude, longitude pair. Picture a map showing building outlines but no labels, then clicking on a building and being shown the name of the business. That is reverse geocoding.
 
-## Prerequisite
-
-- You must have Google Maps API Key
+This repository holds a small web service that performs reverse geocoding to determine whether specified geo  coordinates has an adress. If it is then the response will contain attributes associated with the matched adress, municipality, county, country, etc.
 
 ## Deployment
 
-From GitHub:
-
 ```shell
-git clone https://github.com/saidsef/faas-reverse-geocoding.git
-cd faas-reverse-geocoding/
-faas-cli deploy -f ./faas-reverse-geocoding.yml
-```
-
-```shell
-faas-cli deploy -f https://raw.githubusercontent.com/saidsef/faas-reverse-geocoding/master/faas-reverse-geocoding.yml
+kubectl apply -k deployment/
 ```
 
 Take it for a test drive:
 
 ```shell
-curl -d '{"lat":"41.40338","lng":"2.17403"}' http://localhost:8080/function/reverse-geocoding
+curl -d '{"lat":"41.40338","lon":"2.17403"}' http://localhost:8080/
 ```
 
 ```python
 from requests import post
-data='{"lat":"41.40338","lng":"2.17403"}'
-r = post('http://localhost:8080/function/reverse-geocoding', data=data)
+data='{"lat":"41.40338","lon":"2.17403"}'
+r = post('http://localhost:8080/', data=data)
 print(r.text)
 ```
+
+## Source
+
+Our latest and greatest source of Jenkins can be found on [GitHub]. Fork us!
+
+## Contributing
+
+We would :heart: you to contribute by making a [pull request](https://github.com/saidsef/faas-reverse-geocoding/pulls).
+
+Please read the official [Contribution Guide](./CONTRIBUTING.md) for more information on how you can contribute.
