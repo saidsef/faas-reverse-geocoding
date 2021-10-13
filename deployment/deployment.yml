@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geocode
+  labels:
+    name: classifier
+    app: geocode
+spec:
+  revisionHistoryLimit: 1
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geocode
+  template:
+    metadata:
+      labels:
+        app: geocode
+    spec:
+      # hostNetwork: true
+      containers:
+      - name: geocode
+        image: ghcr.io/saidsef/faas-reverse-geocoding:latest
+        imagePullPolicy: Always
+        env:
+          - name: "PORT"
+            value: "8080"
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_ADMIN
+              - SYS_TIME
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: http
+        resources:
+          requests:
+           memory: "1Gi"
+           cpu: "100m"
+          limits:
+            memory: "2Gi"
+            cpu: "200m"
+        livenessProbe:
+          exec:
+            command:
+              - pgrep
+              - geocode
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 2
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 2
+          successThreshold: 1
+          timeoutSeconds: 3
