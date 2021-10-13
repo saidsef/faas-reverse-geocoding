@@ -41,7 +41,7 @@ ingress:
     - host: geocode.local
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          pathType: Prefix
   tls: []
   #  - secretName: example-tls
   #    hosts:
