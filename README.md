@@ -6,9 +6,23 @@ This repository holds a small web service that performs reverse geocoding to det
 
 ## Deployment
 
+### Helm Chart
+
+```shell
+helm repo add geocode https://saidsef.github.io/faas-reverse-geocoding
+helm repo update 
+helm upgrade --install geocode geocode/reverse-geocoding --namespace geocode --create-namespace
+```
+
+> *NOTE:* API can be accessed via port-forward `Service` or via Enabling `Ingress`
+
+### Kustomization
+
 ```shell
 kubectl apply -k deployment/
 ```
+
+> *NOTE:* API can be accessed via port-forward `Service` or via updating `Ingress`
 
 Take it for a test drive:
 
