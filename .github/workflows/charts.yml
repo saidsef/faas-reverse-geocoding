@@ -3,7 +3,7 @@ name: Charts
 on:
   workflow_run:
     workflows:
-      - Tagging
+      - CI
     types:
       - completed
     branch:
