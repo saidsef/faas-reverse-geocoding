@@ -19,13 +19,15 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+    add:
+    - NET_BIND_SERVICE
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   type: ClusterIP
@@ -42,23 +44,23 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  # tls: []
   #  - secretName: example-tls
   #    hosts:
   #      - example.local
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  limits:
+    cpu: 100m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 10
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
