@@ -2,9 +2,9 @@ apiVersion: v2
 name: reverse-geocoding
 description: GeoCode Helm chart for Kubernetes
 type: application
-version: 0.2.2
-appVersion: "0.2.2"
-apiVersion: "1.21"
+version: 0.2.3
+appVersion: "0.2.3"
+apiVersion: ">= 1.21"
 keywords:
   - reverse-geocoding
   - geocoding
