@@ -27,8 +27,26 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        go: ["1.16"]
+    name: Go ${{ matrix.go }} version
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Setup go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+    - name: Codecov Test
+      uses: codecov/codecov-action@v2
+  
   build:
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
