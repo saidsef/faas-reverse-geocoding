@@ -32,50 +32,50 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: ["1.16"]
+        go: ["1.18", "1.19"]
     name: Go ${{ matrix.go }} version
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Setup go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
     - name: Codecov Test Run
       run: |
         go test -race -coverprofile=coverage.txt -covermode=atomic
     - name: Codecov Test Upload
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
   
   build:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set Tag Name
       run: |
         echo "TAG=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
         echo "DATE=v$(echo `date +'%Y.%m'`)" >> $GITHUB_ENV
     - name: Login to DockerHub
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       if: success()
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ env.OWNER }}
         password: ${{ github.token }}
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1.2.0
+      uses: docker/setup-qemu-action@v2
       with:
         platforms: all
     - name: Set up Docker Buildx
       id: buildx
       if: success()
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
       env:
         DOCKER_BUILDKIT: 1
     - name: Build and push Docker image - (MAIN)
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       if: success()
       env:
         DOCKER_BUILDKIT: 1
@@ -89,7 +89,7 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.REPO_NAME }}:${{ env.TAG == 'main' && 'latest' || env.TAG }}
     - name: Build and push Docker image - (DATE)
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       if: ${{ contains(github.ref, 'main') }}
       env:
         DOCKER_BUILDKIT: 1
@@ -111,7 +111,7 @@ jobs:
         template: '@/contrib/sarif.tpl'
         output: 'trivy-results.sarif'
     - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v1
+      uses: github/codeql-action/upload-sarif@v2
       if: success()
       with:
         sarif_file: 'trivy-results.sarif'
@@ -122,9 +122,9 @@ jobs:
     if: ${{ ! contains(github.ref, 'main') }}
     steps:
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.2.0
+        uses: helm/kind-action@v1.3.0
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Run K8s test
         run: |
           kubectl cluster-info
@@ -138,11 +138,16 @@ jobs:
 
   auto-approve:
     runs-on: ubuntu-latest
-    needs: [build, k8s-test]
+    needs: [test, build, k8s-test]
     if: ${{ github.event_name == 'pull_request' }}
     steps:
-    - name: Check out repository code
-      uses: actions/checkout@v2
-    - uses: hmarr/auto-approve-action@v2
+    - name: Auto Approve PR
+      uses: actions/github-script@v6
       with:
-        github-token: "${{ secrets.GITHUB_TOKEN }}"
+       script: |
+        github.rest.pulls.createReview({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          pull_number: context.issue.number,
+          event: "APPROVE"
+        })
