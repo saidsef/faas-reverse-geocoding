@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine AS builder
+FROM golang:1.19-alpine AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 ENV PORT ${PORT:-8080}
