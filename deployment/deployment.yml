@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: geocode
   labels:
-    name: classifier
+    name: geocode
     app: geocode
 spec:
   revisionHistoryLimit: 1
