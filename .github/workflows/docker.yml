@@ -6,6 +6,7 @@ on:
     paths:
       - "charts/**"
       - "geocode.go"
+      - "geocode_test.go"
       - "go.mod"
       - "go.sum"
       - "Dockerfile"
@@ -16,6 +17,7 @@ on:
     paths:
       - "charts/**"
       - "geocode.go"
+      - "geocode_test.go"
       - "go.mod"
       - "go.sum"
       - "Dockerfile"
