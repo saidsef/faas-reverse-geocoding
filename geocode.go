@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 
@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	key  string
 	port string
 )
 
@@ -57,12 +56,12 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		defer resp.Body.Close()
 
 		if resp.StatusCode == http.StatusOK {
-			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			bodyBytes, err := io.ReadAll(resp.Body)
 			if err != nil {
 				fmt.Fprintf(w, "body error %s", err)
 			}
 			bodyString := string(bodyBytes)
-			fmt.Fprintf(w, bodyString)
+			fmt.Fprintf(w, "%s", bodyString)
 		}
 	default:
 		fmt.Fprintf(w, `{"status": "method not allowed"}`)
