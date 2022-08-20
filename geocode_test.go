@@ -10,13 +10,18 @@ import (
 
 func TestLatitudeLongitude(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req2 := httptest.NewRequest(http.MethodPost, "/", nil)
 	w := httptest.NewRecorder()
 	latitudeLongitude(w, req)
+	latitudeLongitude(w, req2)
 	res := w.Result()
 	defer res.Body.Close()
 	data, err := io.ReadAll(res.Body)
 	if req == nil {
-		t.Errorf("the request object is empty %v", req)
+		t.Errorf("request GET object is empty %v", req)
+	}
+	if req2 == nil {
+		t.Errorf("request POST object is empty %v", req2)
 	}
 	if res.Body == nil {
 		t.Errorf("expected body to have value, but got %d", res.StatusCode)
