@@ -32,8 +32,9 @@ spec:
           - name: "PORT"
             value: "8080"
         securityContext:
-          allowPrivilegeEscalation: true
-          privileged: true
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
           readOnlyRootFilesystem: false
           capabilities:
             drop:
