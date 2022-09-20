@@ -33,6 +33,8 @@ spec:
             value: "8080"
         securityContext:
           runAsNonRoot: true
+          runAsGroup: 65534
+          runAsUser: 65534
           allowPrivilegeEscalation: false
           privileged: false
           readOnlyRootFilesystem: false
