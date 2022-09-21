@@ -11,6 +11,16 @@ Please note we have a code of conduct, please follow it in all your interactions
 3. Increase the version numbers is managed by the GitHub Actions CI workflow `tagging.yml`
 4. You may merge the Pull Request in once you have the sign-off of from the project team, or if you do not have permission to do that, you may request a reviewer to merge it for you.
 
+## Benchmark
+
+If you are working on a feature that is likely to impact performance, consider running benchmarks and comparing the results before and after your change.
+
+To run benchmarks, run the command:
+
+```shell
+go test -run=^$ -bench=. .
+```
+
 ## Code of Conduct
 
 ### Our Pledge

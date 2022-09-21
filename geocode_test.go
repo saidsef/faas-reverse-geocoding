@@ -43,7 +43,7 @@ func TestMain(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.port, func(t *testing.T) {
 			if i, err := strconv.ParseInt(port, 10, 64); err == nil {
-				t.Errorf("found error on port number: %d and %v", i, err)
+				t.Errorf("expected int on port number %d got %v", i, err)
 			}
 		})
 	}
