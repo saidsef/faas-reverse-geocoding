@@ -22,6 +22,7 @@ on:
       - "go.sum"
       - "Dockerfile"
       - ".github/workflows/docker.yml"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -124,7 +125,7 @@ jobs:
     if: ${{ ! contains(github.ref, 'main') }}
     steps:
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.3.0
+        uses: helm/kind-action@v1.4.0
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run K8s test
@@ -136,7 +137,7 @@ jobs:
           fi
           kubectl create namespace $NS
           kubectl kustomize deployment/ | kubectl apply -f -
-          kubectl get all -n $NS
+          kubectl get all -A
 
   auto-approve:
     runs-on: ubuntu-latest
