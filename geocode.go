@@ -12,16 +12,18 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// Port number: string
 var (
 	port string
 )
 
-// Coordinates set Lat and Long
+// Coordinates set Lat and Long in json payload
 type Coordinates struct {
 	Lat  string `json:"lat"`
 	Long string `json:"lon"`
 }
 
+// Lat and Long geo coordinates
 func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -43,7 +45,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
 		}
 
 		client := &http.Client{Transport: tr}
@@ -68,6 +70,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Main func server
 func main() {
 	flag.StringVar(&port, "port", "8080", "Listening PORT")
 	flag.Parse()
