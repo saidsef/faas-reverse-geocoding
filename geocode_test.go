@@ -30,7 +30,10 @@ func TestLatitudeLongitude(t *testing.T) {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	if string(data) == "" {
-		t.Errorf("expected status got %v", string(data))
+		t.Errorf("expected main body is empty: %v", string(data))
+	}
+	if data == nil {
+		t.Errorf("expected main body is nil %v", string(data))
 	}
 }
 
