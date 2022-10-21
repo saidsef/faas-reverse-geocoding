@@ -24,7 +24,11 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if (default false .Values.serviceAccount.create) }}
       serviceAccountName: {{ include "reverse-geocoding.serviceAccountName" . }}
+      {{- end }}
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
