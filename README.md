@@ -4,6 +4,7 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/saidsef/faas-reverse-geocoding)
 [![GoDoc](https://godoc.org/github.com/saidsef/faas-reverse-geocoding?status.svg)](https://pkg.go.dev/github.com/saidsef/faas-reverse-geocoding?tab=doc)
 ![GitHub release(latest by date)](https://img.shields.io/github/v/release/saidsef/faas-reverse-geocoding)
+![Commits](https://img.shields.io/github/commits-since/saidsef/faas-reverse-geocoding/latest.svg)
 ![GitHub](https://img.shields.io/github/license/saidsef/faas-reverse-geocoding)
 
 Reverse geocoding is used to find places or addresses near a latitude, longitude pair. Picture a map showing building outlines but no labels, then clicking on a building and being shown the name of the business. That is reverse geocoding.
