@@ -13,7 +13,8 @@ images:
   newTag: latest
 
 vars:
-- fieldref: {}
+- fieldref:
+    fieldpath: metadata.name
   name: HOST
   objref:
     apiVersion: networking.k8s.io/v1

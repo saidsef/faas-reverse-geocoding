@@ -23,7 +23,9 @@ spec:
       labels:
         app: geocode
     spec:
-      # hostNetwork: true
+      hostNetwork: false
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       containers:
       - name: geocode
         image: ghcr.io/saidsef/faas-reverse-geocoding:latest
@@ -37,13 +39,14 @@ spec:
           runAsUser: 65534
           allowPrivilegeEscalation: false
           privileged: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
+          seccompProfile:
+            type: RuntimeDefault
           capabilities:
             drop:
               - ALL
             add:
-              - NET_ADMIN
-              - SYS_TIME
+              - NET_BIND_SERVICE
         ports:
         - containerPort: 8080
           protocol: TCP
