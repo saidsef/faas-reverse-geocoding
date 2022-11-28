@@ -11,7 +11,7 @@ RUN apk add --no-cache curl git && \
     go get github.com/prometheus/client_golang/prometheus/promhttp && \
     go build geocode.go
 
-FROM alpine:3.16
+FROM alpine:3.17
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 ENV fprocess="/usr/bin/geocode"
