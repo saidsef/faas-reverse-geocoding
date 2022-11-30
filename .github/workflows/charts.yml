@@ -59,6 +59,7 @@ jobs:
           config: charts/cr.yml
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
   auto-approve:
     runs-on: ubuntu-latest
     needs: [charts]
