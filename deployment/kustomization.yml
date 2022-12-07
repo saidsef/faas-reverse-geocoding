@@ -12,6 +12,10 @@ images:
   newName: ghcr.io/saidsef/faas-reverse-geocoding
   newTag: latest
 
+commonAnnotations:
+  app.kubernetes.io/name: geocode
+  app.kubernetes.io/part-of: geocode
+
 vars:
 - fieldref:
     fieldpath: metadata.name

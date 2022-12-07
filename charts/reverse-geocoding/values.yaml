@@ -36,8 +36,8 @@ service:
 ingress:
   enabled: false
   className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  annotations:
+    app.kubernetes.io/name: "geocode"
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: geocode.local
