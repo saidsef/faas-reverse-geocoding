@@ -28,7 +28,7 @@ spec:
       enableServiceLinks: false
       containers:
       - name: geocode
-        image: ghcr.io/saidsef/faas-reverse-geocoding:latest
+        image: ghcr.io/saidsef/faas-reverse-geocoding:v2022.12
         imagePullPolicy: Always
         env:
           - name: "PORT"

@@ -14,11 +14,9 @@ RUN apk add --no-cache curl git && \
 FROM alpine:3.17
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
-ENV fprocess="/usr/bin/geocode"
+USER nobody
 
 COPY --from=builder /app/geocode /usr/bin/
-
-USER nobody
 
 HEALTHCHECK --interval=30s --timeout=10s CMD curl --fail 'http://localhost:${PORT}/' || exit 1
 

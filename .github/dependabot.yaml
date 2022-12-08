@@ -12,7 +12,7 @@ updates:
       interval: "weekly"
     pull-request-branch-name:
       separator: "-"
-  - package-ecosystem: gomod
+  - package-ecosystem: "gomod"
     directory: /
     schedule:
       interval: "weekly"
