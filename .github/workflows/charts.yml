@@ -1,11 +1,12 @@
 name: Charts
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/**"
+  pull_request:
     branches:
       - main
     paths:
