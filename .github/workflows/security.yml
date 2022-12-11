@@ -1,4 +1,4 @@
-name: CI
+name: Security
 on:
   workflow_run:
     workflows:
@@ -25,4 +25,5 @@ jobs:
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v2
       with:
+        github-token: ${{ github.token }}
         sarif_file: 'trivy-results.sarif'
