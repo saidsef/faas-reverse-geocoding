@@ -17,7 +17,7 @@ This repository holds a small web service that performs reverse geocoding to det
 
 ```shell
 helm repo add geocode https://saidsef.github.io/faas-reverse-geocoding
-helm repo update 
+helm repo update
 helm upgrade --install geocode geocode/reverse-geocoding --namespace geocode --create-namespace
 ```
 
