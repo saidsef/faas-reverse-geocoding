@@ -1,6 +1,6 @@
 # reverse-geocoding
 
-![Version: 0.2.9](https://img.shields.io/badge/Version-0.2.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.9](https://img.shields.io/badge/AppVersion-0.2.9-informational?style=flat-square)
+![Version: 0.2.10](https://img.shields.io/badge/Version-0.2.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.10](https://img.shields.io/badge/AppVersion-0.2.10-informational?style=flat-square)
 
 Reverse GeoCode Helm chart for Kubernetes
 
@@ -46,7 +46,6 @@ Kubernetes: `>= 1.22`
 | resources.requests.cpu | string | `"100m"` |  |
 | resources.requests.memory | string | `"128Mi"` |  |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| securityContext.capabilities.add[0] | string | `"NET_BIND_SERVICE"` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.privileged | bool | `false` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |

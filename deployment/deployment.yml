@@ -45,8 +45,6 @@ spec:
           capabilities:
             drop:
               - ALL
-            add:
-              - NET_BIND_SERVICE
         ports:
         - containerPort: 8080
           protocol: TCP
