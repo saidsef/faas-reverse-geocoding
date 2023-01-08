@@ -8,6 +8,10 @@ metadata:
     app: geocode
 spec:
   type: ClusterIP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 60
   selector:
     app: geocode
   ports:

@@ -4,9 +4,7 @@ LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 ENV PORT ${PORT:-8080}
 
 WORKDIR /app
-COPY geocode.go /app/
-COPY go.mod /app/
-COPY go.sum /app/
+COPY geocode.go go.mod go.sum /app/
 RUN apk add --no-cache curl git && \
     go get github.com/prometheus/client_golang/prometheus/promhttp && \
     go build geocode.go

@@ -3,6 +3,7 @@ on:
   workflow_run:
     workflows:
       - CI
+      - Charts
     types:
       - completed
     branches:
