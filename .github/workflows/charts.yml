@@ -55,7 +55,7 @@ jobs:
           cp -v *.md charts/reverse-geocoding/
       - name: Run chart-releaser
         if: ${{ contains(github.ref, 'main') }}
-        uses: helm/chart-releaser-action@v1.4.1
+        uses: helm/chart-releaser-action@v1.5.0
         with:
           charts_dir: charts
           config: charts/cr.yml
