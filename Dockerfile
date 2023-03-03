@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.19-alpine AS builder
+FROM docker.io/golang:1.20-alpine AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 ENV PORT ${PORT:-8080}
