@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine AS builder
+FROM docker.io/golang:1.19-alpine AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 ENV PORT ${PORT:-8080}
@@ -9,7 +9,7 @@ RUN apk add --no-cache curl git && \
     go get github.com/prometheus/client_golang/prometheus/promhttp && \
     go build geocode.go
 
-FROM alpine:3.17
+FROM docker.io/alpine:3.17
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 USER nobody
