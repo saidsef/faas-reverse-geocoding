@@ -1,76 +1,40 @@
 package main
 
 import (
-	"io"
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 )
 
 func TestLatitudeLongitude(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	req2 := httptest.NewRequest(http.MethodPost, "/", nil)
-	w := httptest.NewRecorder()
-	latitudeLongitude(w, req)
-	latitudeLongitude(w, req2)
-	res := w.Result()
-	defer res.Body.Close()
-	data, err := io.ReadAll(res.Body)
-	if req == nil {
-		t.Errorf("request GET object is empty %v", req)
-	}
-	if req2 == nil {
-		t.Errorf("request POST object is empty %v", req2)
-	}
-	if res.Body == nil {
-		t.Errorf("expected body to have value, but got %d", res.StatusCode)
-	}
+	// Create a new HTTP request with a POST method and a JSON payload
+	payload := map[string]string{"lat": "40.712776", "lon": "-74.005974"}
+	payloadBytes, _ := json.Marshal(payload)
+	req, err := http.NewRequest("POST", "/", bytes.NewBuffer(payloadBytes))
 	if err != nil {
-		t.Errorf("expected error to be nil got %v", err)
+		t.Fatal(err)
 	}
-	if string(data) == "" {
-		t.Errorf("expected main body is empty: %v", string(data))
-	}
-	if data == nil {
-		t.Errorf("expected main body is nil %v", string(data))
-	}
-}
+	req.Header.Set("Content-Type", "application/json")
 
-func TestMain(t *testing.T) {
-	tests := []struct {
-		port string
-	}{
-		{"8080"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.port, func(t *testing.T) {
-			if i, err := strconv.ParseInt(port, 10, 64); err == nil {
-				t.Errorf("expected int on port number %d got %v", i, err)
-			}
-		})
-	}
-}
-
-func Test_latitudeLongitude(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/", nil)
+	// Create a new HTTP recorder to capture the response
 	rr := httptest.NewRecorder()
-	type args struct {
-		w http.ResponseWriter
-		r *http.Request
+
+	// Call the latitudeLongitude handler function with the test request and response
+	handler := http.HandlerFunc(latitudeLongitude)
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code of the response
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		{
-			name: "test get /",
-			args: args{w: rr, r: req},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			latitudeLongitude(tt.args.w, tt.args.r)
-		})
+
+	// Check the response body of the response
+	want := `{"place_id":226470475,"licence":"Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright","osm_type":"way","osm_id":575213527,"lat":"40.71273945","lon":"-74.00593904130275","display_name":"New York City Hall, 260, Broadway, Lower Manhattan, Manhattan Community Board 1, Manhattan, New York County, City of New York, New York, 10000, United States","address":{"amenity":"New York City Hall","house_number":"260","road":"Broadway","quarter":"Lower Manhattan","neighbourhood":"Manhattan Community Board 1","suburb":"Manhattan","county":"New York County","city":"City of New York","state":"New York","ISO3166-2-lvl4":"US-NY","postcode":"10000","country":"United States","country_code":"us"},"boundingbox":["40.712445","40.7130254","-74.0064455","-74.0055687"]}`
+	if rr.Body.String() != want {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), want)
 	}
 }
