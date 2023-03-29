@@ -6,6 +6,9 @@ metadata:
   labels:
     name: geocode
     app: geocode
+  annotations:
+    prometheus.io/scrape: "true"
+    filter.by.port.name: "true"
 spec:
   type: ClusterIP
   sessionAffinity: ClientIP
