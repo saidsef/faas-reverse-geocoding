@@ -5,37 +5,62 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
-func TestLatitudeLongitude(t *testing.T) {
-	// Create a new HTTP request with a POST method and a JSON payload
-	payload := map[string]string{"lat": "40.712776", "lon": "-74.005974"}
-	payloadBytes, _ := json.Marshal(payload)
-	req, err := http.NewRequest("POST", "/", bytes.NewBuffer(payloadBytes))
+func TestGetRequest(t *testing.T) {
+	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("could not create request: %v", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
 
-	// Create a new HTTP recorder to capture the response
 	rr := httptest.NewRecorder()
-
-	// Call the latitudeLongitude handler function with the test request and response
 	handler := http.HandlerFunc(latitudeLongitude)
+
 	handler.ServeHTTP(rr, req)
 
-	// Check the status code of the response
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}
 
-	// Check the response body of the response
-	want := rr.Body.String()
-	// Openstreetmap slightly change place_id value on different requests and the test fails
-	if rr.Body.String() != want {
+	expected := `{"status": "healthy"}`
+	if strings.TrimSpace(rr.Body.String()) != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), want)
+			rr.Body.String(), expected)
+	}
+}
+
+func TestPostRequest(t *testing.T) {
+	c := Coordinates{Lat: "40.748817", Long: "-73.985428"}
+	payload, _ := json.Marshal(c)
+
+	req, err := http.NewRequest("POST", "/", bytes.NewBuffer(payload))
+	if err != nil {
+		t.Fatalf("could not create request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(latitudeLongitude)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	if strings.TrimSpace(rr.Body.String()) == "" {
+		t.Errorf("handler returned empty body")
+	}
+
+	var response map[string]interface{}
+	if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
+		t.Fatalf("could not unmarshal response: %v", err)
+	}
+
+	if _, ok := response["address"]; !ok {
+		t.Errorf("handler returned unexpected response: %v", response)
 	}
 }
