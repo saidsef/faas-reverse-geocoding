@@ -10,7 +10,7 @@ resources:
 images:
 - name: geocode
   newName: ghcr.io/saidsef/faas-reverse-geocoding
-  newTag: latest
+  newTag: "2023.05"
 
 commonAnnotations:
   app.kubernetes.io/name: geocode
