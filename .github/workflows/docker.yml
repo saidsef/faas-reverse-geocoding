@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: ["1.18", "1.19", "1.20"]
+        go: ["1.18", "1.19", "1.20", "1.21"]
     name: Go ${{ matrix.go }} version
     steps:
     - name: Check out repository code
