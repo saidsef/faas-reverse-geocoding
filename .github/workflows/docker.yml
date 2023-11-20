@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: ["1.18", "1.19", "1.20", "1.21"]
+        go: ["1.20", "1.21"]
     name: Go ${{ matrix.go }} version
     steps:
     - name: Check out repository code
@@ -44,7 +44,7 @@ jobs:
         go-version: ${{ matrix.go }}
     - name: Codecov Test Run
       run: |
-        go get -u all
+        go get
         go test -race -coverprofile=coverage.txt -covermode=atomic
     - name: Codecov Test Upload
       uses: codecov/codecov-action@v3
@@ -144,7 +144,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     steps:
     - name: Auto Approve PR
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
        script: |
         github.rest.pulls.createReview({
@@ -160,7 +160,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     steps:
     - name: Add Preview Label
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           github.rest.issues.addLabels({
@@ -180,7 +180,7 @@ jobs:
   #   - name: Check out repository code
   #     uses: actions/checkout@v4
   #   - name: Auto Merge PR
-  #     uses: actions/github-script@v6
+  #     uses: actions/github-script@v7
   #     with:
   #       github-token: ${{ github.token }}
   #       script: |
