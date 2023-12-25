@@ -1,7 +1,7 @@
 kind: HTTPRoute
 apiVersion: gateway.networking.k8s.io/v1beta1
 metadata:
-  name: server
+  name: geocode
 spec:
   parentRefs:
   - kind: Gateway
