@@ -51,11 +51,11 @@ spec:
           name: http
         resources:
           requests:
-           memory: "1Gi"
-           cpu: "100m"
+           memory: "200Mi"
+           cpu: "50m"
           limits:
-            memory: "1Gi"
-            cpu: "150m"
+            memory: "300Mi"
+            cpu: "80m"
         livenessProbe:
           exec:
             command:
