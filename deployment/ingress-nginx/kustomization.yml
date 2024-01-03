@@ -5,3 +5,17 @@ kind: Kustomization
 resources:
 - ../base
 - ingress.yml
+
+replacements:
+- source:
+    fieldPath: spec.rules[0].host
+    group: networking.k8s.io
+    kind: Ingress
+    name: geocode
+    version: v1
+  targets:
+    - select:
+        kind: Ingress
+        name: geocode
+        version: v1
+        group: networking.k8s.io

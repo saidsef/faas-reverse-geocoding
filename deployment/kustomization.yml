@@ -1,11 +1,8 @@
----
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-- deployment.yml
-- service.yml
-- ingress.yml
+- ./base
 
 images:
 - name: geocode
@@ -15,12 +12,3 @@ images:
 commonAnnotations:
   app.kubernetes.io/name: geocode
   app.kubernetes.io/part-of: geocode
-
-vars:
-- fieldref:
-    fieldpath: metadata.name
-  name: HOST
-  objref:
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    name: geocode

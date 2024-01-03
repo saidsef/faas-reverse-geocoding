@@ -18,7 +18,7 @@ metadata:
       }
 spec:
   rules:
-  - host: $(HOST)
+  - host: geocode
     http:
       paths:
       - path: /
