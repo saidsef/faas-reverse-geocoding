@@ -13,19 +13,22 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Port number: string
-var (
-	port string
-)
-
 // Coordinates set Lat and Long in json payload
 type Coordinates struct {
 	Lat  string `json:"lat"`
 	Long string `json:"lon"`
 }
 
-// Create a new logger object
-var logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
+var (
+	// Coordinates: struct
+	c Coordinates
+	// Port number: string
+	port string
+	// Create a new logger object
+	logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
+	// Endpoint: string
+	endpoint string = "https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat"
+)
 
 // Wrap handler function with logging middleware
 func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -38,8 +41,6 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 // Lat and Long geo coordinates
 func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
-	var c Coordinates
 
 	switch r.Method {
 	case "GET":
@@ -61,7 +62,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 
 		client := &http.Client{Transport: tr}
-		url := fmt.Sprintf("https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat=%s&lon=%s", c.Lat, c.Long)
+		url := fmt.Sprintf("%s=%s&lon=%s", endpoint, c.Lat, c.Long)
 
 		// Log outgoing request
 		logger.Printf("%s %s", r.RemoteAddr, url)
