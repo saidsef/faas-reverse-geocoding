@@ -47,7 +47,7 @@ jobs:
         go get
         go test -race -coverprofile=coverage.txt -covermode=atomic
     - name: Codecov Test Upload
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
 
   build:
     runs-on: ubuntu-latest
