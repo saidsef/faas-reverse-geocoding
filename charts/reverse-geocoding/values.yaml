@@ -3,10 +3,10 @@ replicaCount: 1
 image:
   repository: ghcr.io/saidsef/faas-reverse-geocoding
   pullPolicy: IfNotPresent
-  tag: "v2023.05"
+  tag: "v2024.02"
 
 imagePullSecrets: []
-nameOverride: ""
+nameOverride: "geocode"
 fullnameOverride: ""
 
 serviceAccount:

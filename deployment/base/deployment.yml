@@ -4,8 +4,7 @@ kind: Deployment
 metadata:
   name: geocode
   labels:
-    name: geocode
-    app: geocode
+    app.kubernetes.io/name: geocode
 spec:
   revisionHistoryLimit: 1
   minReadySeconds: 10
@@ -17,11 +16,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: geocode
+      app.kubernetes.io/name: geocode
   template:
     metadata:
       labels:
-        app: geocode
+        app.kubernetes.io/name: geocode
     spec:
       hostNetwork: false
       automountServiceAccountToken: false

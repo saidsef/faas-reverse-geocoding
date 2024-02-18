@@ -2,6 +2,8 @@ kind: HTTPRoute
 apiVersion: gateway.networking.k8s.io/v1beta1
 metadata:
   name: geocode
+  labels:
+    app.kubernetes.io/name: geocode
 spec:
   parentRefs:
   - kind: Gateway
