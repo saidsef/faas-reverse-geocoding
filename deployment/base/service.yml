@@ -4,8 +4,7 @@ kind: Service
 metadata:
   name: geocode
   labels:
-    name: geocode
-    app: geocode
+    app.kubernetes.io/name: geocode
   annotations:
     prometheus.io/scrape: "true"
     filter.by.port.name: "true"
@@ -16,7 +15,7 @@ spec:
     clientIP:
       timeoutSeconds: 60
   selector:
-    app: geocode
+    app.kubernetes.io/name: geocode
   ports:
     - name: tcp-term
       protocol: TCP

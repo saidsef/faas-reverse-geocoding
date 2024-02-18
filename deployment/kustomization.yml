@@ -10,5 +10,4 @@ images:
   newTag: "2023.12"
 
 commonAnnotations:
-  app.kubernetes.io/name: geocode
   app.kubernetes.io/part-of: geocode
