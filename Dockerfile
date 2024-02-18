@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.22-alpine AS builder
+FROM docker.io/golang:1.22-alpine3.19 AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 ENV PORT ${PORT:-8080}
@@ -16,7 +16,7 @@ USER nobody
 
 COPY --from=builder /app/geocode /usr/bin/
 
-HEALTHCHECK --interval=30s --timeout=10s CMD curl --fail 'http://localhost:${PORT}/' || exit 1
+HEALTHCHECK --interval=60s --timeout=10s CMD curl --fail 'http://localhost:${PORT}/' || exit 1
 
 EXPOSE ${PORT}
 
