@@ -13,24 +13,23 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Coordinates set Lat and Long in json payload
+// Coordinates represents the latitude and longitude in a JSON payload.
 type Coordinates struct {
 	Lat  string `json:"lat"`
 	Long string `json:"lon"`
 }
 
 var (
-	// Coordinates: struct
-	c Coordinates
-	// Port number: string
-	port string
-	// Create a new logger object
-	logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
-	// Endpoint: string
-	endpoint string = "https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat"
+	c      Coordinates                                    // c holds the latitude and longitude coordinates.
+	port   string                                         // port specifies the port number on which the server listens.
+	logger = log.New(os.Stdout, "[http] ", log.LstdFlags) // logger is used for logging HTTP requests and responses.
 )
 
-// Wrap handler function with logging middleware
+const (
+	endpoint string = "https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat" // endpoint is the URL to which the latitude and longitude are appended.
+)
+
+// loggingMiddleware wraps an http.HandlerFunc with logging functionality, logging each request's remote address, method, and URL.
 func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
@@ -38,7 +37,8 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// Lat and Long geo coordinates
+// latitudeLongitude handles HTTP requests by responding with the server's health status on GET requests,
+// and querying an external API for location information based on latitude and longitude provided in POST requests.
 func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -94,7 +94,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Main func server
+// main initializes the server, setting up routes and starting the server on the specified port.
 func main() {
 	flag.StringVar(&port, "port", "8080", "Listening PORT")
 	flag.Parse()
