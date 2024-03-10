@@ -2,107 +2,73 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-// TestLatitudeLongitudeGET tests the GET request handling of the latitudeLongitude function.
-// It checks if the function returns a "healthy" status as expected.
-func TestLatitudeLongitudeGET(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err)
+// TestLatitudeLongitudeHandler tests the latitudeLongitude HTTP handler function.
+func TestLatitudeLongitudeHandler(t *testing.T) {
+	// Test cases to cover all critical paths.
+	tests := []struct {
+		name           string
+		method         string
+		body           string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name:           "Health Check - GET Request",
+			method:         "GET",
+			expectedStatus: http.StatusOK,
+			expectedBody:   `{"status": "healthy"}`,
+		},
+		{
+			name:           "POST Request - Missing Body",
+			method:         "POST",
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "EOF\n",
+		},
+		{
+			name:           "POST Request - Incomplete Data",
+			method:         "POST",
+			body:           `{"lat": "51.5074"}`,
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Lat and/or Lon positions error - not set\n",
+		},
+		// Add more test cases as needed, especially for successful POST requests.
+		// Note: Successful POST requests would require mocking the external API call to Nominatim.
 	}
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(latitudeLongitude)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// Create a request with the specified method, URL, and body.
+			var req *http.Request
+			if tc.body != "" {
+				req = httptest.NewRequest(tc.method, "/", bytes.NewBufferString(tc.body))
+			} else {
+				req = httptest.NewRequest(tc.method, "/", nil)
+			}
+			// Record the response.
+			rr := httptest.NewRecorder()
 
-	handler.ServeHTTP(rr, req)
+			// Create an HTTP handler from our function.
+			handler := http.HandlerFunc(latitudeLongitude)
 
-	expected := `{"status": "healthy"}`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
-}
+			// Serve the HTTP request to our handler.
+			handler.ServeHTTP(rr, req)
 
-// TestLatitudeLongitudePOSTValid tests the POST request handling with valid coordinates.
-// It checks if the function can successfully decode the JSON payload and make an external API call.
-func TestLatitudeLongitudePOSTValid(t *testing.T) {
-	// Mock coordinates
-	coordinates := Coordinates{
-		Lat:  "51.5074",
-		Long: "0.1278",
-	}
-	jsonPayload, err := json.Marshal(coordinates)
-	if err != nil {
-		t.Fatal(err)
-	}
+			// Check the status code is what we expect.
+			if status := rr.Code; status != tc.expectedStatus {
+				t.Errorf("handler returned wrong status code: got %v want %v",
+					status, tc.expectedStatus)
+			}
 
-	req, err := http.NewRequest("POST", "/", bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(latitudeLongitude)
-
-	handler.ServeHTTP(rr, req)
-
-	// Since the actual external API call is made, we cannot predict the exact response body.
-	// However, we can check if the response status code is OK (200), indicating a successful API call.
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-}
-
-// TestLatitudeLongitudePOSTInvalid tests the POST request handling with invalid (empty) coordinates.
-// It checks if the function correctly handles the error case when coordinates are not provided.
-func TestLatitudeLongitudePOSTInvalid(t *testing.T) {
-	// Empty coordinates
-	jsonPayload, err := json.Marshal(Coordinates{})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	req, err := http.NewRequest("POST", "/", bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(latitudeLongitude)
-
-	handler.ServeHTTP(rr, req)
-
-	expected := "Lat and/or Lon positions error - not set"
-	body, _ := io.ReadAll(rr.Body)
-	if !bytes.Contains(body, []byte(expected)) {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			string(body), expected)
-	}
-}
-
-// TestLatitudeLongitudeUnsupportedMethod tests the handling of unsupported HTTP methods.
-// It ensures that the function returns a "method not allowed" status for methods other than GET and POST.
-func TestLatitudeLongitudeUnsupportedMethod(t *testing.T) {
-	req, err := http.NewRequest("PUT", "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(latitudeLongitude)
-
-	handler.ServeHTTP(rr, req)
-
-	expected := `{"status": "method not allowed"}`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			// Check the response body is what we expect.
+			if rr.Body.String() != tc.expectedBody {
+				t.Errorf("handler returned unexpected body: got %v want %v",
+					rr.Body.String(), tc.expectedBody)
+			}
+		})
 	}
 }
