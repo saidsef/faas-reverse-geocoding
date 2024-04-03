@@ -111,5 +111,14 @@ func main() {
 	r.Handle("/metrics", promhttp.Handler())
 
 	logger.Printf("Server is running on port %d", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), r))
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%d", port),
+		ReadHeaderTimeout: 15 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       30 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
