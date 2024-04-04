@@ -23,7 +23,7 @@ const (
 
 var (
 	// port defines the port on which the server listens. It can be set via command-line flag.
-	port string
+	port int
 
 	// logger provides a logging instance prefixed with "[http]" and standard flags.
 	logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
@@ -38,9 +38,18 @@ var (
 // It logs the remote address, HTTP method, and the request URL.
 func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+		logger.Printf("%s %s %s %d %s", r.RemoteAddr, r.Method, r.URL, r.ContentLength, r.Host)
 		next.ServeHTTP(w, r)
 	}
+}
+
+// Coordinates defines a structure for geographical coordinates with latitude and longitude.
+// It is designed to be used in applications that require geographical locations to be represented
+// in a structured format. The latitude (Lat) and longitude (Long) are stored as strings to accommodate
+// various formats, but they typically represent decimal degrees.
+type Coordinates struct {
+	Lat  string `json:"lat"`
+	Long string `json:"lon"`
 }
 
 // latitudeLongitude is an HTTP handler function that processes incoming requests.
@@ -54,10 +63,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		fmt.Fprintf(w, `{"status": "healthy"}`)
 	case "POST":
-		var c struct {
-			Lat  string `json:"lat"`
-			Long string `json:"lon"`
-		}
+		var c Coordinates
 
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -97,13 +103,22 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 // main initializes the server, setting up routes and starting the server on the specified port.
 // It listens on the root path for reverse geocoding requests and on /metrics for Prometheus metrics.
 func main() {
-	flag.StringVar(&port, "port", "8080", "Listening PORT")
+	flag.IntVar(&port, "port", 8080, "HTTP Listening PORT")
 	flag.Parse()
 
 	r := http.NewServeMux()
 	r.HandleFunc("/", loggingMiddleware(latitudeLongitude))
 	r.Handle("/metrics", promhttp.Handler())
 
-	logger.Printf("Server started on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	logger.Printf("Server is running on port %d", port)
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%d", port),
+		ReadHeaderTimeout: 15 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       30 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
