@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -95,9 +96,8 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Define a template that safely escapes data.
-		// tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
-		// tmpl.Execute(w, bodyBytes)
-		fmt.Fprintf(w, "%s", bodyBytes)
+		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
+		tmpl.Execute(w, bodyBytes)
 	default:
 		http.Error(w, `{"status": "method not allowed"}`, http.StatusMethodNotAllowed)
 	}
