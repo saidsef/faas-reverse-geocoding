@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -94,7 +95,9 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "%s", bodyBytes)
+		// Define a template that safely escapes data.
+		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
+		tmpl.Execute(w, bodyBytes)
 	default:
 		http.Error(w, `{"status": "method not allowed"}`, http.StatusMethodNotAllowed)
 	}
@@ -110,14 +113,17 @@ func main() {
 	r.HandleFunc("/", loggingMiddleware(latitudeLongitude))
 	r.Handle("/metrics", promhttp.Handler())
 
-	logger.Printf("Server is running on port %d", port)
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           r,
 		ReadHeaderTimeout: 15 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		IdleTimeout:       30 * time.Second,
 	}
+
+	logger.Printf("Server is running on port %d and address %s", port, srv.Addr)
+
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
