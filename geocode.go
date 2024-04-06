@@ -98,7 +98,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 
 		// Define a template that safely escapes data.
 		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
-		if err := tmpl.Execute(w, location); err != nil {
+		if err := tmpl.Execute(w, json.NewEncoder(w).Encode(location)); err != nil {
 			http.Error(w, "Error rendering template", http.StatusInternalServerError)
 			return
 		}
