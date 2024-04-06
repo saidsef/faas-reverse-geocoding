@@ -97,7 +97,10 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 
 		// Define a template that safely escapes data.
 		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
-		tmpl.Execute(w, bodyBytes)
+		if err := tmpl.Execute(w, string(bodyBytes)); err != nil {
+			http.Error(w, "Error rendering template", http.StatusInternalServerError)
+			return
+		}
 	default:
 		http.Error(w, `{"status": "method not allowed"}`, http.StatusMethodNotAllowed)
 	}
