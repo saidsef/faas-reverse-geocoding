@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -25,6 +24,9 @@ const (
 var (
 	// port defines the port on which the server listens. It can be set via command-line flag.
 	port int
+
+	// location response json interface
+	location interface{}
 
 	// logger provides a logging instance prefixed with "[http]" and standard flags.
 	logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
@@ -84,20 +86,19 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 		defer resp.Body.Close()
 
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
+		if err := json.NewDecoder(resp.Body).Decode(&location); err != nil {
 			http.Error(w, fmt.Sprintf("Error reading response body: %s", err), http.StatusInternalServerError)
 			return
 		}
 
 		if resp.StatusCode != http.StatusOK {
-			http.Error(w, fmt.Sprintf("External API error: %s", string(bodyBytes)), resp.StatusCode)
+			http.Error(w, fmt.Sprintf("External API error: %s", location), resp.StatusCode)
 			return
 		}
 
 		// Define a template that safely escapes data.
 		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
-		if err := tmpl.Execute(w, string(bodyBytes)); err != nil {
+		if err := tmpl.Execute(w, location); err != nil {
 			http.Error(w, "Error rendering template", http.StatusInternalServerError)
 			return
 		}
