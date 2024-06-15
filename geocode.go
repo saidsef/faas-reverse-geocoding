@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -16,12 +17,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// endpoint specifies the URL template for the Nominatim reverse geocoding API.
-const (
-	endpoint = "https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat"
-)
-
 var (
+	// endpoint specifies the URLs template for the Nominatim reverse geocoding API.
+	endpoint = []string{
+		"https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat=%s&lon=%s",
+		"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=%s&longitude=%s&localityLanguage=en",
+	}
+
 	// port defines the port on which the server listens. It can be set via command-line flag.
 	port int
 
@@ -102,7 +104,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		url := fmt.Sprintf("%s=%s&lon=%s", endpoint, c.Lat, c.Long)
+		url := fmt.Sprintf(endpoint[rand.Intn(len(endpoint))], c.Lat, c.Long)
 		resp, err := client.Get(url)
 		defer resp.Body.Close()
 
