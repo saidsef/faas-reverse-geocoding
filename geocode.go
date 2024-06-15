@@ -25,6 +25,9 @@ var (
 	// port defines the port on which the server listens. It can be set via command-line flag.
 	port int
 
+	// verbose defines the verbosity of logs. It can be set via command-line flag.
+	verbose bool
+
 	// location response json interface
 	location interface{}
 
@@ -33,15 +36,36 @@ var (
 
 	// client is an HTTP client configured with a timeout to use for external API requests.
 	client = &http.Client{
-		Timeout: time.Second * 10,
+		Timeout:   time.Second * 10,
+		Transport: &loggingRoundTripper{http.DefaultTransport},
 	}
 )
+
+// loggingRoundTripper is a custom RoundTripper that logs the details of each HTTP request and response.
+type loggingRoundTripper struct {
+	transport http.RoundTripper
+}
+
+// RoundTrip executes a single HTTP transaction and logs the request and response details.
+func (lrt *loggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	startTime := time.Now()
+	resp, err := lrt.transport.RoundTrip(req)
+	duration := time.Since(startTime)
+
+	if err != nil {
+		logger.Printf("HTTP request error: %s", err)
+		return nil, err
+	}
+
+	logger.Printf("Request: %s %s %s, Response: %d, Duration: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration)
+	return resp, nil
+}
 
 // loggingMiddleware is a middleware function that logs incoming HTTP requests.
 // It logs the remote address, HTTP method, and the request URL.
 func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger.Printf("%s %s %s %d %s", r.RemoteAddr, r.Method, r.URL, r.ContentLength, r.Host)
+		logger.Printf("%s %s %s %d %s %s", r.RemoteAddr, r.Method, r.URL, r.ContentLength, r.Host, r.Proto)
 		next.ServeHTTP(w, r)
 	}
 }
@@ -74,17 +98,18 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if c.Lat == "" || c.Long == "" {
-			http.Error(w, "Lat and/or Lon positions error - not set", http.StatusBadRequest)
+			http.Error(w, "Lat and/or Long positions error - not set", http.StatusBadRequest)
 			return
 		}
 
 		url := fmt.Sprintf("%s=%s&lon=%s", endpoint, c.Lat, c.Long)
 		resp, err := client.Get(url)
+		defer resp.Body.Close()
+
 		if err != nil {
 			http.Error(w, fmt.Sprintf("HTTP request error: %s", err), http.StatusInternalServerError)
 			return
 		}
-		defer resp.Body.Close()
 
 		if err := json.NewDecoder(resp.Body).Decode(&location); err != nil {
 			http.Error(w, fmt.Sprintf("Error reading response body: %s", err), http.StatusInternalServerError)
@@ -104,13 +129,15 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 	default:
 		http.Error(w, `{"status": "method not allowed"}`, http.StatusMethodNotAllowed)
+		return
 	}
 }
 
 // main initializes the server, setting up routes and starting the server on the specified port.
 // It listens on the root path for reverse geocoding requests and on /metrics for Prometheus metrics.
 func main() {
-	flag.IntVar(&port, "port", 8080, "HTTP Listening PORT")
+	flag.IntVar(&port, "port", 8080, "HTTP listening PORT")
+	flag.BoolVar(&verbose, "verbose", false, "Enable verbose logging")
 	flag.Parse()
 
 	r := http.NewServeMux()
@@ -119,11 +146,12 @@ func main() {
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", port),
+		ErrorLog:          logger,
 		Handler:           r,
+		IdleTimeout:       30 * time.Second,
 		ReadHeaderTimeout: 15 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      10 * time.Second,
-		IdleTimeout:       30 * time.Second,
 	}
 
 	logger.Printf("Server is running on port %d and address %s", port, srv.Addr)
