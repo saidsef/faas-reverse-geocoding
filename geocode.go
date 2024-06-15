@@ -4,12 +4,13 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
 	"log"
-	"math/rand"
+	"math/big"
 	"net/http"
 	"os"
 	"time"
@@ -104,7 +105,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		url := fmt.Sprintf(endpoint[rand.Intn(len(endpoint))], c.Lat, c.Long)
+		url := fmt.Sprintf(endpoint[randomInt(len(endpoint))], c.Lat, c.Long)
 		resp, err := client.Get(url)
 		defer resp.Body.Close()
 
@@ -133,6 +134,15 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"status": "method not allowed"}`, http.StatusMethodNotAllowed)
 		return
 	}
+}
+
+// randomInt generates a cryptographically secure random integer between 0 and max-1.
+func randomInt(max int) int {
+	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+	if err != nil {
+		logger.Fatalf("Failed to generate random number: %v", err)
+	}
+	return int(nBig.Int64())
 }
 
 // main initializes the server, setting up routes and starting the server on the specified port.
