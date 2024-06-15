@@ -13,6 +13,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -42,7 +43,51 @@ var (
 		Timeout:   time.Second * 10,
 		Transport: &loggingRoundTripper{http.DefaultTransport},
 	}
+
+	// cache duration: cache for 30 minutes
+	CACHE_DURATION = 30
+
+	// cache to store responses temporarily
+	cache = &Cache{
+		data: make(map[string]CacheItem),
+	}
 )
+
+// CacheItem represents a single item in the cache.
+type CacheItem struct {
+	Response   interface{}
+	Expiration time.Time
+}
+
+// Cache is a simple in-memory cache with expiration.
+type Cache struct {
+	sync.Mutex
+	data map[string]CacheItem
+}
+
+// Set adds an item to the cache.
+func (c *Cache) Set(key string, value interface{}, duration time.Duration) {
+	c.Lock()
+	defer c.Unlock()
+	c.data[key] = CacheItem{
+		Response:   value,
+		Expiration: time.Now().Add(duration),
+	}
+}
+
+// Get retrieves an item from the cache.
+func (c *Cache) Get(key string) (interface{}, bool) {
+	c.Lock()
+	defer c.Unlock()
+	item, found := c.data[key]
+	if !found || time.Now().After(item.Expiration) {
+		if found {
+			delete(c.data, key)
+		}
+		return nil, false
+	}
+	return item.Response, true
+}
 
 // loggingRoundTripper is a custom RoundTripper that logs the details of each HTTP request and response.
 type loggingRoundTripper struct {
@@ -105,7 +150,13 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		url := fmt.Sprintf(endpoint[randomInt(len(endpoint))], c.Lat, c.Long)
+		cacheKey := fmt.Sprintf("%s,%s", c.Lat, c.Long)
+		if cachedResponse, found := cache.Get(cacheKey); found {
+			json.NewEncoder(w).Encode(cachedResponse)
+			return
+		}
+
+		url := fmt.Sprintf(endpoint[rand.Intn(len(endpoint))], c.Lat, c.Long)
 		resp, err := client.Get(url)
 		defer resp.Body.Close()
 
@@ -123,6 +174,9 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("External API error: %s", location), resp.StatusCode)
 			return
 		}
+
+		// retrive from the cache if not expired
+		cache.Set(cacheKey, location, time.Duration(CACHE_DURATION)*time.Minute)
 
 		// Define a template that safely escapes data.
 		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
