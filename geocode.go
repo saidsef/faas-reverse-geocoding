@@ -95,6 +95,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 
 		cacheKey := fmt.Sprintf("%s,%s", c.Lat, c.Long)
 		if cachedResponse, found := cacheInstance.Get(cacheKey); found {
+			logger.Printf("Cache hit for key: %s", cacheKey)
 			json.NewEncoder(w).Encode(cachedResponse)
 			return
 		}
