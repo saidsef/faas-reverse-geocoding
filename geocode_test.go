@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/saidsef/faas-reverse-geocoding/internal/handlers"
 )
 
 // TestLatitudeLongitudeHandler tests the latitudeLongitude HTTP handler function.
@@ -53,7 +55,7 @@ func TestLatitudeLongitudeHandler(t *testing.T) {
 			rr := httptest.NewRecorder()
 
 			// Create an HTTP handler from our function.
-			handler := http.HandlerFunc(latitudeLongitude)
+			handler := http.HandlerFunc(handlers.LatitudeLongitude)
 
 			// Serve the HTTP request to our handler.
 			handler.ServeHTTP(rr, req)
