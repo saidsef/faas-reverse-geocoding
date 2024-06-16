@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -15,7 +14,7 @@ import (
 var (
 	port    int
 	verbose bool
-	logger  = log.New(os.Stdout, "[http] ", log.LstdFlags)
+	logger  = handlers.Logger
 )
 
 func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
