@@ -13,10 +13,11 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/saidsef/faas-reverse-geocoding/internal/cache"
+	"github.com/saidsef/faas-reverse-geocoding/internal/httpclient"
 )
 
 var (
@@ -41,73 +42,15 @@ var (
 	// client is an HTTP client configured with a timeout to use for external API requests.
 	client = &http.Client{
 		Timeout:   time.Second * 10,
-		Transport: &loggingRoundTripper{http.DefaultTransport},
+		Transport: &httpclient.LoggingRoundTripper{Transport: http.DefaultTransport},
 	}
 
 	// cache duration: cache for 30 minutes
-	CACHE_DURATION = 30
+	CACHE_DURATION_MINUTES = 30
 
 	// cache to store responses temporarily
-	cache = &Cache{
-		data: make(map[string]CacheItem),
-	}
+	cacheInstance = cache.NewCache()
 )
-
-// CacheItem represents a single item in the cache.
-type CacheItem struct {
-	Response   interface{}
-	Expiration time.Time
-}
-
-// Cache is a simple in-memory cache with expiration.
-type Cache struct {
-	sync.Mutex
-	data map[string]CacheItem
-}
-
-// Set adds an item to the cache.
-func (c *Cache) Set(key string, value interface{}, duration time.Duration) {
-	c.Lock()
-	defer c.Unlock()
-	c.data[key] = CacheItem{
-		Response:   value,
-		Expiration: time.Now().Add(duration),
-	}
-}
-
-// Get retrieves an item from the cache.
-func (c *Cache) Get(key string) (interface{}, bool) {
-	c.Lock()
-	defer c.Unlock()
-	item, found := c.data[key]
-	if !found || time.Now().After(item.Expiration) {
-		if found {
-			delete(c.data, key)
-		}
-		return nil, false
-	}
-	return item.Response, true
-}
-
-// loggingRoundTripper is a custom RoundTripper that logs the details of each HTTP request and response.
-type loggingRoundTripper struct {
-	transport http.RoundTripper
-}
-
-// RoundTrip executes a single HTTP transaction and logs the request and response details.
-func (lrt *loggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	startTime := time.Now()
-	resp, err := lrt.transport.RoundTrip(req)
-	duration := time.Since(startTime)
-
-	if err != nil {
-		logger.Printf("HTTP request error: %s", err)
-		return nil, err
-	}
-
-	logger.Printf("Request: %s %s %s, Response: %d, Duration: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration)
-	return resp, nil
-}
 
 // loggingMiddleware is a middleware function that logs incoming HTTP requests.
 // It logs the remote address, HTTP method, and the request URL.
@@ -151,12 +94,12 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 
 		cacheKey := fmt.Sprintf("%s,%s", c.Lat, c.Long)
-		if cachedResponse, found := cache.Get(cacheKey); found {
+		if cachedResponse, found := cacheInstance.Get(cacheKey); found {
 			json.NewEncoder(w).Encode(cachedResponse)
 			return
 		}
 
-		url := fmt.Sprintf(endpoint[rand.Intn(len(endpoint))], c.Lat, c.Long)
+		url := fmt.Sprintf(endpoint[randomInt(len(endpoint))], c.Lat, c.Long)
 		resp, err := client.Get(url)
 		defer resp.Body.Close()
 
@@ -176,7 +119,7 @@ func latitudeLongitude(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// retrive from the cache if not expired
-		cache.Set(cacheKey, location, time.Duration(CACHE_DURATION)*time.Minute)
+		cacheInstance.Set(cacheKey, location, time.Duration(CACHE_DURATION_MINUTES)*time.Minute)
 
 		// Define a template that safely escapes data.
 		tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
