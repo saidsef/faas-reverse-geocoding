@@ -61,7 +61,7 @@ spec:
               - pgrep
               - geocode
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: 30
           failureThreshold: 2
           successThreshold: 1
           timeoutSeconds: 3
@@ -69,7 +69,7 @@ spec:
           tcpSocket:
             port: http
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: 30
           failureThreshold: 2
           successThreshold: 1
           timeoutSeconds: 3

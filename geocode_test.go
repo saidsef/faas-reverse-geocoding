@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/saidsef/faas-reverse-geocoding/internal/handlers"
 )
 
 // TestLatitudeLongitudeHandler tests the latitudeLongitude HTTP handler function.
@@ -34,7 +36,7 @@ func TestLatitudeLongitudeHandler(t *testing.T) {
 			method:         "POST",
 			body:           `{"lat": "51.5074"}`,
 			expectedStatus: http.StatusBadRequest,
-			expectedBody:   "Lat and/or Long positions error - not set\n",
+			expectedBody:   "lat and/or Long positions error - not set\n",
 		},
 		// Add more test cases as needed, especially for successful POST requests.
 		// Note: Successful POST requests would require mocking the external API call to Nominatim.
@@ -53,7 +55,7 @@ func TestLatitudeLongitudeHandler(t *testing.T) {
 			rr := httptest.NewRecorder()
 
 			// Create an HTTP handler from our function.
-			handler := http.HandlerFunc(latitudeLongitude)
+			handler := http.HandlerFunc(handlers.LatitudeLongitude)
 
 			// Serve the HTTP request to our handler.
 			handler.ServeHTTP(rr, req)
