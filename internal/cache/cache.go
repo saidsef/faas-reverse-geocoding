@@ -4,6 +4,8 @@ package cache
 import (
 	"sync"
 	"time"
+
+	"github.com/saidsef/faas-reverse-geocoding/internal/utils"
 )
 
 // CacheItem represents a single item in the cache.
@@ -46,6 +48,9 @@ func (c *Cache) Get(key string) (interface{}, bool) {
 	defer c.Unlock()
 	item, found := c.data[key]
 	if !found || time.Now().After(item.Expiration) {
+		if utils.Verbose {
+			utils.Logger.Printf("Cache MISS for key: %s, expirartion: %s", key, item.Expiration)
+		}
 		delete(c.data, key)
 		return nil, false
 	}

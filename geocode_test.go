@@ -36,7 +36,7 @@ func TestLatitudeLongitudeHandler(t *testing.T) {
 			method:         "POST",
 			body:           `{"lat": "51.5074"}`,
 			expectedStatus: http.StatusBadRequest,
-			expectedBody:   "Lat and/or Long positions error - not set\n",
+			expectedBody:   "lat and/or Long positions error - not set\n",
 		},
 		// Add more test cases as needed, especially for successful POST requests.
 		// Note: Successful POST requests would require mocking the external API call to Nominatim.

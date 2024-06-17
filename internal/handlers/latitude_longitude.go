@@ -1,19 +1,16 @@
 package handlers
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
-	"math/big"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/saidsef/faas-reverse-geocoding/internal/cache"
 	"github.com/saidsef/faas-reverse-geocoding/internal/geo"
 	"github.com/saidsef/faas-reverse-geocoding/internal/httpclient"
+	"github.com/saidsef/faas-reverse-geocoding/internal/utils"
 )
 
 var (
@@ -24,8 +21,6 @@ var (
 
 	location interface{}
 
-	Logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
-
 	client = &http.Client{
 		Timeout:   time.Second * 10,
 		Transport: &httpclient.LoggingRoundTripper{Transport: http.DefaultTransport},
@@ -35,14 +30,6 @@ var (
 
 	cacheInstance = cache.NewCache()
 )
-
-func randomInt(max int) int {
-	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
-	if err != nil {
-		Logger.Fatalf("Failed to generate random number: %v", err)
-	}
-	return int(nBig.Int64())
-}
 
 func LatitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -76,6 +63,9 @@ func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 
 	cacheKey := fmt.Sprintf("%s,%s", c.Lat, c.Long)
 	if cachedResponse, found := cacheInstance.Get(cacheKey); found {
+		if utils.Verbose {
+			utils.Logger.Printf("Cache HIT for key: %s", cacheKey)
+		}
 		handleCacheHit(w, cachedResponse)
 		return
 	}
@@ -89,7 +79,7 @@ func decodeRequestBody(r *http.Request, c *geo.Coordinates) error {
 
 func validateCoordinates(c geo.Coordinates) error {
 	if c.Lat == "" || c.Long == "" {
-		return fmt.Errorf("Lat and/or Long positions error - not set")
+		return fmt.Errorf("lat and/or Long positions error - not set")
 	}
 	return nil
 }
@@ -102,14 +92,15 @@ func handleCacheHit(w http.ResponseWriter, cachedResponse interface{}) {
 func handleCacheMiss(w http.ResponseWriter, c geo.Coordinates, cacheKey string) {
 	w.Header().Set("X-Cache-Status", "MISS")
 
-	url := fmt.Sprintf(endpoint[randomInt(len(endpoint))], c.Lat, c.Long)
+	url := fmt.Sprintf(endpoint[utils.RandomInt(len(endpoint))], c.Lat, c.Long)
 	resp, err := client.Get(url)
-	defer resp.Body.Close()
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("HTTP request error: %s", err), http.StatusInternalServerError)
 		return
 	}
+
+	defer resp.Body.Close()
 
 	if err := decodeResponseBody(resp, &location); err != nil {
 		http.Error(w, fmt.Sprintf("Error reading response body: %s", err), http.StatusInternalServerError)

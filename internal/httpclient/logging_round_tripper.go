@@ -2,14 +2,11 @@
 package httpclient
 
 import (
-	"log"
 	"net/http"
-	"os"
 	"time"
-)
 
-// logger provides a logging instance prefixed with "[http]" and standard flags.
-var logger = log.New(os.Stdout, "[http] ", log.LstdFlags)
+	"github.com/saidsef/faas-reverse-geocoding/internal/utils"
+)
 
 // LoggingRoundTripper is a custom RoundTripper that logs the details of each HTTP request and response.
 type LoggingRoundTripper struct {
@@ -25,10 +22,10 @@ func (lrt *LoggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, er
 	duration := time.Since(startTime)
 
 	if err != nil {
-		logger.Printf("HTTP request error: %s", err)
+		utils.Logger.Printf("HTTP request error: %s", err)
 		return nil, err
 	}
 
-	logger.Printf("Request: %s %s %s, Response: %d, Duration: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration)
+	utils.Logger.Printf("Request: %s %s %s, Response: %d, Duration: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration)
 	return resp, nil
 }
