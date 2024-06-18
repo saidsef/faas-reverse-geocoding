@@ -47,12 +47,17 @@ func (c *Cache) Get(key string) (interface{}, bool) {
 	c.Lock()
 	defer c.Unlock()
 	item, found := c.data[key]
-	if !found || time.Now().After(item.Expiration) {
+	cacheExpiration := time.Now().After(item.Expiration)
+	cacheTime := time.Until(item.Expiration)
+	if !found || cacheExpiration {
 		if utils.Verbose {
-			utils.Logger.Printf("Cache MISS for key: %s, expirartion: %s", key, item.Expiration)
+			utils.Logger.Debugf("Cache MISS for key: %s, expired: %t", key, cacheExpiration)
 		}
 		delete(c.data, key)
 		return nil, false
+	}
+	if utils.Verbose {
+		utils.Logger.Debugf("Cache HIT for key: %s, expired: %t, cacheTime: %s", key, cacheExpiration, cacheTime)
 	}
 	return item.Response, true
 }
