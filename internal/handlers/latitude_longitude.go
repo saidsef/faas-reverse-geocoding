@@ -108,23 +108,25 @@ func handleCacheMiss(w http.ResponseWriter, c geo.Coordinates, cacheKey string) 
 	w.Header().Set("X-Cache-Status", "MISS")
 
 	var location interface{}
-
 	url := fmt.Sprintf(endpoint[utils.RandomInt(len(endpoint))], c.Lat, c.Long)
 	resp, err := client.Get(url)
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("HTTP request error: %s", err), http.StatusInternalServerError)
+		utils.Logger.Errorf("Failed to fetch data from URL %s: %v", url, err)
+		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
 		return
 	}
 
 	defer resp.Body.Close()
 
 	if err := decodeResponseBody(resp, &location); err != nil {
-		http.Error(w, fmt.Sprintf("Error reading response body: %s", err), http.StatusInternalServerError)
+		utils.Logger.Errorf("Failed to decode response body: %v", err)
+		http.Error(w, "Failed to decode response", http.StatusInternalServerError)
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		utils.Logger.Errorf("Failed to get proper status code response: %d", resp.StatusCode)
 		http.Error(w, fmt.Sprintf("External API error: %s", location), resp.StatusCode)
 		return
 	}
