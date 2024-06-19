@@ -19,18 +19,28 @@ var (
 		"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=%s&longitude=%s&localityLanguage=en",
 	}
 
-	location interface{}
-
 	client = &http.Client{
 		Timeout:   time.Second * 10,
 		Transport: &httpclient.LoggingRoundTripper{Transport: http.DefaultTransport},
 	}
 
-	CACHE_DURATION_MINUTES = 30
+	CACHE_DURATION_MINUTES int
 
 	cacheInstance = cache.NewCache()
 )
 
+// SetCacheDurationMinutes sets the cache duration in minutes.
+// It returns the set duration.
+func SetCacheDurationMinutes(duration int) int {
+	CACHE_DURATION_MINUTES = duration
+	if utils.Verbose {
+		utils.Logger.Debugf("Cache duration update to %d", duration)
+	}
+	return CACHE_DURATION_MINUTES
+}
+
+// LatitudeLongitude handles HTTP requests for latitude and longitude data.
+// It supports GET and POST methods.
 func LatitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -44,10 +54,13 @@ func LatitudeLongitude(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleGetRequest handles GET requests by returning a healthy status.
 func handleGetRequest(w http.ResponseWriter) {
 	fmt.Fprintf(w, `{"status": "healthy"}`)
 }
 
+// handlePostRequest handles POST requests by decoding the request body,
+// validating coordinates, and either returning cached data or fetching new data.
 func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 	var c geo.Coordinates
 
@@ -63,9 +76,6 @@ func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 
 	cacheKey := fmt.Sprintf("%s,%s", c.Lat, c.Long)
 	if cachedResponse, found := cacheInstance.Get(cacheKey); found {
-		if utils.Verbose {
-			utils.Logger.Printf("Cache HIT for key: %s", cacheKey)
-		}
 		handleCacheHit(w, cachedResponse)
 		return
 	}
@@ -73,10 +83,12 @@ func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 	handleCacheMiss(w, c, cacheKey)
 }
 
+// decodeRequestBody decodes the JSON request body into the provided coordinates struct.
 func decodeRequestBody(r *http.Request, c *geo.Coordinates) error {
 	return json.NewDecoder(r.Body).Decode(c)
 }
 
+// validateCoordinates validates that the latitude and longitude are not empty.
 func validateCoordinates(c geo.Coordinates) error {
 	if c.Lat == "" || c.Long == "" {
 		return fmt.Errorf("lat and/or Long positions error - not set")
@@ -84,30 +96,37 @@ func validateCoordinates(c geo.Coordinates) error {
 	return nil
 }
 
+// handleCacheHit handles the case where the data is found in the cache.
 func handleCacheHit(w http.ResponseWriter, cachedResponse interface{}) {
 	w.Header().Set("X-Cache-Status", "HIT")
 	json.NewEncoder(w).Encode(cachedResponse)
 }
 
+// handleCacheMiss handles the case where the data is not found in the cache.
+// It fetches new data from the external API and caches it.
 func handleCacheMiss(w http.ResponseWriter, c geo.Coordinates, cacheKey string) {
 	w.Header().Set("X-Cache-Status", "MISS")
 
+	var location interface{}
 	url := fmt.Sprintf(endpoint[utils.RandomInt(len(endpoint))], c.Lat, c.Long)
 	resp, err := client.Get(url)
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("HTTP request error: %s", err), http.StatusInternalServerError)
+		utils.Logger.Errorf("Failed to fetch data from URL %s: %v", url, err)
+		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
 		return
 	}
 
 	defer resp.Body.Close()
 
 	if err := decodeResponseBody(resp, &location); err != nil {
-		http.Error(w, fmt.Sprintf("Error reading response body: %s", err), http.StatusInternalServerError)
+		utils.Logger.Errorf("Failed to decode response body: %v", err)
+		http.Error(w, "Failed to decode response", http.StatusInternalServerError)
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		utils.Logger.Errorf("Failed to get proper status code response: %d", resp.StatusCode)
 		http.Error(w, fmt.Sprintf("External API error: %s", location), resp.StatusCode)
 		return
 	}
@@ -116,10 +135,12 @@ func handleCacheMiss(w http.ResponseWriter, c geo.Coordinates, cacheKey string) 
 	renderTemplate(w, location)
 }
 
+// decodeResponseBody decodes the JSON response body into the provided location interface.
 func decodeResponseBody(resp *http.Response, location *interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(location)
 }
 
+// renderTemplate renders the location data as a JSON response.
 func renderTemplate(w http.ResponseWriter, location interface{}) {
 	tmpl := template.Must(template.New("safeTemplate").Parse("{{.}}"))
 	if err := tmpl.Execute(w, json.NewEncoder(w).Encode(location)); err != nil {

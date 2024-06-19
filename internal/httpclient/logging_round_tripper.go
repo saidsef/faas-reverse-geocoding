@@ -22,10 +22,10 @@ func (lrt *LoggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, er
 	duration := time.Since(startTime)
 
 	if err != nil {
-		utils.Logger.Printf("HTTP request error: %s", err)
+		utils.Logger.Errorf("HTTP request error: %s", err)
 		return nil, err
 	}
 
-	utils.Logger.Printf("Request: %s %s %s, Response: %d, Duration: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration)
+	utils.Logger.Infof("Request: %s %s %s, Response: %d, Duration: %s, remote: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration, req.RemoteAddr)
 	return resp, nil
 }
