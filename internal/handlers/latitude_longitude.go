@@ -91,7 +91,7 @@ func decodeRequestBody(r *http.Request, c *geo.Coordinates) error {
 // validateCoordinates validates that the latitude and longitude are correct.
 func validateCoordinates(c geo.Coordinates) error {
 	if c.Lat < -90 || c.Lat > 90 || c.Long < -180 || c.Long > 180 {
-		return fmt.Errorf("lat and/or long positions error - out of range")
+		return fmt.Errorf("Latitude and/or longitude values are out of range.")
 	}
 	return nil
 }

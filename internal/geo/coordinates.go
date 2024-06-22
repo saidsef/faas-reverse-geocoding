@@ -14,6 +14,14 @@ type Coordinates struct {
 	Long float32 `json:"lon"`
 }
 
+// UnmarshalJSON customises the JSON unmarshalling for Coordinates.
+// It expects the JSON data to have "lat" and "lon" as strings, which are then parsed into float32.
+//
+// Parameters:
+// - data: A byte slice containing the JSON-encoded data.
+//
+// Returns:
+// - error: An error if the unmarshalling or parsing fails, otherwise nil.
 func (c *Coordinates) UnmarshalJSON(data []byte) error {
 	var aux struct {
 		Lat  string `json:"lat"`

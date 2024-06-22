@@ -9,11 +9,11 @@
 
 Reverse geocoding is used to find places or addresses near a latitude, longitude pair. Picture a map showing building outlines but no labels, then clicking on a building and being shown the name of the business. That is reverse geocoding.
 
-This repository holds a small web service that performs reverse geocoding to determine whether specified geo  coordinates has an adress. If it is then the response will contain attributes associated with the matched adress, municipality, county, country, etc.
+This repository holds a small web service that performs reverse geocoding to determine whether specified geo  coordinates has an address. If it is then the response will contain attributes associated with the matched address, municipality, county, country, etc.
 
-> By default this will cache requests for 60 minutes to prevent same requst(s) being sent again and again. The percision is limited to 3 decimal places.
+> By default, this will cache requests for 60 minutes to prevent repeated request(s) being sent again and again. The percision is limited to 3 decimal places.
 
-### Geographic Coordinates
+## Geographic Coordinates
 
 The number of decimal places in geographic coordinates determines the accuracy of the location. Each additional decimal place increases the precision of the coordinates:
 
