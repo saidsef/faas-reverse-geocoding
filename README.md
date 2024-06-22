@@ -11,7 +11,18 @@ Reverse geocoding is used to find places or addresses near a latitude, longitude
 
 This repository holds a small web service that performs reverse geocoding to determine whether specified geo  coordinates has an adress. If it is then the response will contain attributes associated with the matched adress, municipality, county, country, etc.
 
-> By default this will cache requests for 60 minutes to prevent same requst(s) being sent again and again.
+> By default this will cache requests for 60 minutes to prevent same requst(s) being sent again and again. The percision is limited to 3 decimal places.
+
+### Geographic Coordinates
+
+The number of decimal places in geographic coordinates determines the accuracy of the location. Each additional decimal place increases the precision of the coordinates:
+
+- One decimal place can pinpoint a location to within about 10 kilometres.
+- Two decimal places can pinpoint a location to within about 1 kilometre.
+- Three decimal places can pinpoint a location to within about 100 metres.
+- Four decimal places can pinpoint a location to within about 10 metres.
+- Five decimal places can pinpoint a location to within about 1 metre.
+- Six decimal places can pinpoint a location to within about 10 centimetres.
 
 ## Deployment
 
