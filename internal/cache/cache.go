@@ -1,4 +1,4 @@
-// Package cache provides caching for http requests.
+// Package cache provides caching for HTTP requests.
 package cache
 
 import (
@@ -15,16 +15,14 @@ type CacheItem struct {
 }
 
 // Cache is a simple in-memory cache with expiration.
+// sync.Map: Is optimised for scenarios with many concurrent reads, writes, and deletions.
 type Cache struct {
-	sync.Mutex
-	data map[string]CacheItem // The map holding the cached items.
+	data sync.Map // The map holding the cached items.
 }
 
 // NewCache creates a new Cache instance.
 func NewCache() *Cache {
-	return &Cache{
-		data: make(map[string]CacheItem),
-	}
+	return &Cache{}
 }
 
 // Set adds an item to the cache.
@@ -32,30 +30,35 @@ func NewCache() *Cache {
 // value: The item to be cached.
 // duration: The duration for which the item should be cached.
 func (c *Cache) Set(key string, value interface{}, duration time.Duration) {
-	c.Lock()
-	defer c.Unlock()
-	c.data[key] = CacheItem{
+	c.data.Store(key, CacheItem{
 		Response:   value,
 		Expiration: time.Now().Add(duration),
-	}
+	})
 }
 
 // Get retrieves an item from the cache.
 // key: The key of the item to retrieve.
 // Returns the cached item and a boolean indicating whether the item was found and is not expired.
 func (c *Cache) Get(key string) (interface{}, bool) {
-	c.Lock()
-	defer c.Unlock()
-	item, found := c.data[key]
+	itemInterface, found := c.data.Load(key)
+	if !found {
+		if utils.Verbose {
+			utils.Logger.Debugf("Cache MISS for key: %s, found: %t", key, found)
+		}
+		return nil, false
+	}
+
+	item := itemInterface.(CacheItem)
 	cacheExpiration := time.Now().After(item.Expiration)
 	cacheTime := time.Until(item.Expiration)
-	if !found || cacheExpiration {
+	if cacheExpiration {
 		if utils.Verbose {
 			utils.Logger.Debugf("Cache MISS for key: %s, expired: %t", key, cacheExpiration)
 		}
-		delete(c.data, key)
+		c.data.Delete(key)
 		return nil, false
 	}
+
 	if utils.Verbose {
 		utils.Logger.Debugf("Cache HIT for key: %s, expired: %t, cacheTime: %s", key, cacheExpiration, cacheTime)
 	}

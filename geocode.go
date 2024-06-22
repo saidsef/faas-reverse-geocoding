@@ -12,11 +12,24 @@ import (
 )
 
 var (
-	port    int
+	// port defines the port number on which the server will listen.
+	port int
+
+	// verbose is a flag that indicates whether verbose logging is enabled.
 	verbose = utils.Verbose
-	cache   = handlers.CACHE_DURATION_MINUTES
+
+	// cache defines the cache duration in minutes.
+	cache = handlers.CACHE_DURATION_MINUTES
 )
 
+// loggingMiddleware is an HTTP middleware that logs the details of each incoming request.
+// It logs the remote address, HTTP method, URL, content length, host, and protocol of the request.
+//
+// Parameters:
+// - next: The next http.HandlerFunc to be called after logging the request details.
+//
+// Returns:
+// - An http.HandlerFunc that logs the request details and then calls the next handler.
 func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		utils.Logger.Infof("%s %s %s %d %s %s", r.RemoteAddr, r.Method, r.URL, r.ContentLength, r.Host, r.Proto)
