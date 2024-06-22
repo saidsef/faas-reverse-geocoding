@@ -74,7 +74,7 @@ func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cacheKey := fmt.Sprintf("%s,%s", c.Lat, c.Long)
+	cacheKey := fmt.Sprintf("%.3f,%.3f", c.Lat, c.Long)
 	if cachedResponse, found := cacheInstance.Get(cacheKey); found {
 		handleCacheHit(w, cachedResponse)
 		return
@@ -88,10 +88,10 @@ func decodeRequestBody(r *http.Request, c *geo.Coordinates) error {
 	return json.NewDecoder(r.Body).Decode(c)
 }
 
-// validateCoordinates validates that the latitude and longitude are not empty.
+// validateCoordinates validates that the latitude and longitude are correct.
 func validateCoordinates(c geo.Coordinates) error {
-	if c.Lat == "" || c.Long == "" {
-		return fmt.Errorf("lat and/or Long positions error - not set")
+	if c.Lat < -90 || c.Lat > 90 || c.Long < -180 || c.Long > 180 {
+		return fmt.Errorf("lat and/or long positions error - out of range")
 	}
 	return nil
 }

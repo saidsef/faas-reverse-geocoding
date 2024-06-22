@@ -11,6 +11,8 @@ Reverse geocoding is used to find places or addresses near a latitude, longitude
 
 This repository holds a small web service that performs reverse geocoding to determine whether specified geo  coordinates has an adress. If it is then the response will contain attributes associated with the matched adress, municipality, county, country, etc.
 
+> By default this will cache requests for 60 minutes to prevent same requst(s) being sent again and again.
+
 ## Deployment
 
 ### Helm Chart
@@ -46,7 +48,7 @@ print(r.text)
 
 ## Source
 
-Our latest and greatest source of Jenkins can be found on [GitHub]. Fork us!
+Our latest and greatest source of *Reverse Geocoding* can be found on [GitHub]. [Fork us](https://github.com/saidsef/faas-reverse-geocoding/fork)!
 
 ## Contributing
 
