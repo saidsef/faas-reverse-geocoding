@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/saidsef/faas-reverse-geocoding/internal/cache"
 	"github.com/saidsef/faas-reverse-geocoding/internal/geo"
 	"github.com/saidsef/faas-reverse-geocoding/internal/httpclient"
+	"github.com/saidsef/faas-reverse-geocoding/internal/metrics"
 	"github.com/saidsef/faas-reverse-geocoding/internal/utils"
 )
 
@@ -114,11 +116,16 @@ func handleCacheMiss(w http.ResponseWriter, c geo.Coordinates, cacheKey string) 
 	w.Header().Set("X-Cache-Status", "MISS")
 
 	var location interface{}
-	url := fmt.Sprintf(endpoint[utils.RandomInt(len(endpoint))], c.Lat, c.Long)
-	resp, err := client.Get(url)
+	uri := fmt.Sprintf(endpoint[utils.RandomInt(len(endpoint))], c.Lat, c.Long)
+	resp, err := client.Get(uri)
+	host, error := url.Parse(uri)
+	if error != nil {
+		utils.Logger.Error("Failed to uri parse hostname")
+	}
+	metrics.Hostname.WithLabelValues(host.Hostname()).Add(1)
 
 	if err != nil {
-		utils.Logger.Errorf("Failed to fetch data from URL %s: %v", url, err)
+		utils.Logger.Errorf("Failed to fetch data from URL %s: %v", uri, err)
 		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
 		return
 	}
