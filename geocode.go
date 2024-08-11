@@ -8,6 +8,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/saidsef/faas-reverse-geocoding/internal/handlers"
+	"github.com/saidsef/faas-reverse-geocoding/internal/metrics"
 	"github.com/saidsef/faas-reverse-geocoding/internal/utils"
 )
 
@@ -45,6 +46,9 @@ func main() {
 
 	// Set the verbosity level in the utils package
 	utils.SetVerbose(verbose)
+
+	// Initialise registers of the metrics Hostname
+	metrics.Init()
 
 	// Set cache duration minutes
 	handlers.SetCacheDurationMinutes(cache)
