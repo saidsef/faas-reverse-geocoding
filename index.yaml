@@ -4,6 +4,29 @@ entries:
   - annotations:
       artifacthub.io/license: MIT
     apiVersion: v2
+    appVersion: 0.3.2
+    created: "2024-08-11T16:14:23.7612481Z"
+    description: Reverse GeoCode Helm chart for Kubernetes
+    digest: b61a1c91c6d63ae596aff643c3cc5e17992e274093c38f34805c7e937dd8d3ba
+    home: https://github.com/saidsef/faas-reverse-geocoding
+    icon: https://upload.wikimedia.org/wikipedia/commons/7/72/OpenStreetMap-Logo-2006.svg
+    keywords:
+    - reverse geocoding
+    - geocoding
+    - kubernetes
+    kubeVersion: '>= 1.27'
+    maintainers:
+    - email: saidsef@gamil.com
+      name: Said Sef
+      url: https://saidsef.co.uk/
+    name: reverse-geocoding
+    type: application
+    urls:
+    - https://github.com/saidsef/faas-reverse-geocoding/releases/download/reverse-geocoding-0.3.2/reverse-geocoding-0.3.2.tgz
+    version: 0.3.2
+  - annotations:
+      artifacthub.io/license: MIT
+    apiVersion: v2
     appVersion: 0.3.1
     created: "2024-06-17T10:50:38.241778657Z"
     description: Reverse GeoCode Helm chart for Kubernetes
@@ -308,4 +331,4 @@ entries:
     urls:
     - https://github.com/saidsef/faas-reverse-geocoding/releases/download/reverse-geocoding-0.2.1/reverse-geocoding-0.2.1.tgz
     version: 0.2.1
-generated: "2024-06-17T10:50:38.241883023Z"
+generated: "2024-08-11T16:14:23.761345133Z"
