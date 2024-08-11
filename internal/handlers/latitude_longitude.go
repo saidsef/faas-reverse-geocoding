@@ -17,8 +17,8 @@ import (
 
 var (
 	endpoint = []string{
-		"https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat=%s&lon=%s",
-		"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=%s&longitude=%s&localityLanguage=en",
+		"https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat=%f&lon=%f",
+		"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=%f&longitude=%f&localityLanguage=en",
 	}
 
 	client = &http.Client{
