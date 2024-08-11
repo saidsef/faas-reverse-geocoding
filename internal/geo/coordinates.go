@@ -3,6 +3,8 @@ package geo
 import (
 	"encoding/json"
 	"strconv"
+
+	"github.com/saidsef/faas-reverse-geocoding/internal/utils"
 )
 
 // Coordinates defines a structure for geographical coordinates with latitude and longitude.
@@ -29,16 +31,19 @@ func (c *Coordinates) UnmarshalJSON(data []byte) error {
 	}
 
 	if err := json.Unmarshal(data, &aux); err != nil {
+		utils.Logger.Errorf("Error parsing json payload: %s", err)
 		return err
 	}
 
 	lat, err := strconv.ParseFloat(aux.Lat, 32)
 	if err != nil {
+		utils.Logger.Errorf("Error parsing Lat json payload: %s", err)
 		return err
 	}
 
 	long, err := strconv.ParseFloat(aux.Long, 32)
 	if err != nil {
+		utils.Logger.Errorf("Error parsing Long json payload: %s", err)
 		return err
 	}
 

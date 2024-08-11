@@ -66,11 +66,17 @@ func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 
 	if err := decodeRequestBody(r, &c); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		if utils.Verbose {
+			utils.Logger.Errorf("Error decoding json payload: %s", err)
+		}
 		return
 	}
 
 	if err := validateCoordinates(c); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		if utils.Verbose {
+			utils.Logger.Errorf("Error validating json payload: %s", err)
+		}
 		return
 	}
 
@@ -120,14 +126,18 @@ func handleCacheMiss(w http.ResponseWriter, c geo.Coordinates, cacheKey string) 
 	defer resp.Body.Close()
 
 	if err := decodeResponseBody(resp, &location); err != nil {
-		utils.Logger.Errorf("Failed to decode response body: %v", err)
 		http.Error(w, "Failed to decode response", http.StatusInternalServerError)
+		if utils.Verbose {
+			utils.Logger.Errorf("Failed to decode response body: %v", err)
+		}
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		utils.Logger.Errorf("Failed to get proper status code response: %d", resp.StatusCode)
 		http.Error(w, fmt.Sprintf("External API error: %s", location), resp.StatusCode)
+		if utils.Verbose {
+			utils.Logger.Errorf("Failed to get proper status code response: %d", resp.StatusCode)
+		}
 		return
 	}
 

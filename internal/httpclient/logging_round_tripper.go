@@ -22,8 +22,10 @@ func (lrt *LoggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, er
 	duration := time.Since(startTime)
 
 	if err != nil {
-		utils.Logger.Errorf("HTTP request error: %s", err)
-		return nil, err
+		if utils.Verbose {
+			utils.Logger.Errorf("HTTP request error: %s", err)
+		}
+		return resp, err
 	}
 
 	utils.Logger.Infof("Request: %s %s %s, Response: %d, Duration: %s, remote: %s", req.Method, req.URL, req.Proto, resp.StatusCode, duration, req.RemoteAddr)
