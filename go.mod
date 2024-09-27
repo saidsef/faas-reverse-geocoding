@@ -3,7 +3,7 @@ module github.com/saidsef/faas-reverse-geocoding
 go 1.22
 
 require (
-	github.com/prometheus/client_golang v1.20.2
+	github.com/prometheus/client_golang v1.20.4
 	github.com/sirupsen/logrus v1.9.3
 )
 
