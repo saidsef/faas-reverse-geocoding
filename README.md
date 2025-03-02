@@ -17,12 +17,14 @@ This repository holds a small web service that performs reverse geocoding to det
 
 The number of decimal places in geographic coordinates determines the accuracy of the location. Each additional decimal place increases the precision of the coordinates:
 
-- One decimal place can pinpoint a location to within about 10 kilometres.
-- Two decimal places can pinpoint a location to within about 1 kilometre.
-- Three decimal places can pinpoint a location to within about 100 metres.
-- Four decimal places can pinpoint a location to within about 10 metres.
-- Five decimal places can pinpoint a location to within about 1 metre.
-- Six decimal places can pinpoint a location to within about 10 centimetres.
+| Decimal Places | Precision        |
+|:--------------:|:----------------:|
+| 1              | ±10 kilometres   |
+| 2              | ±1 kilometre     |
+| 3              | ±100 metres      |
+| 4              | ±10 metres       |
+| 5              | ±1 metre         |
+| 6              | ±10 centimetres  |
 
 ## Deployment
 
