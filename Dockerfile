@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.23-alpine3.19 AS builder
+FROM docker.io/golang:1.23-alpine3.20 AS builder
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 
 WORKDIR /app
