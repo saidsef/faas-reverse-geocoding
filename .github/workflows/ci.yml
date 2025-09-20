@@ -35,21 +35,22 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: ["1.21", "1.22", "1.23"]
+        go: ["1.21", "1.22", "1.23", "1.24"]
     name: Go ${{ matrix.go }} version
     steps:
     - name: Check out repository code
       uses: actions/checkout@v5
     - name: Setup go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go }}
     - name: Codecov Test Run
+      working-directory: .
       run: |
         go get
         go test -v -race -coverprofile=coverage.txt -covermode=atomic
     - name: Codecov Test Upload
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v4
 
   build:
     runs-on: ubuntu-latest
