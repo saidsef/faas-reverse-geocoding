@@ -50,7 +50,7 @@ jobs:
         go get
         go test -v -race -coverprofile=coverage.txt -covermode=atomic
     - name: Codecov Test Upload
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
 
   build:
     runs-on: ubuntu-latest
