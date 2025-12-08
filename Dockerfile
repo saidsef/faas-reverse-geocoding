@@ -7,7 +7,7 @@ RUN apk add --no-cache curl git && \
     go get -v && \
     go build -v -o /app/ ./...
 
-FROM docker.io/alpine:3.22
+FROM docker.io/alpine:3.23
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
 ENV PORT=${PORT:-8080}
 
