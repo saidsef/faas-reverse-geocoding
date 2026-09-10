@@ -61,7 +61,8 @@ jobs:
     - name: Set Tag Name
       run: |
         RAW_REF="${{ github.head_ref || github.ref_name }}"
-        echo "TAG=${RAW_REF//./-}" >> $GITHUB_ENV
+        TAG=$(printf '%s' "${RAW_REF//[._]/-}" | cut -c1-50 | sed 's/-*$//')
+        echo "TAG=${TAG}" >> $GITHUB_ENV
         echo "DATE=v$(echo `date +'%Y.%m'`)" >> $GITHUB_ENV
     - name: Login to DockerHub
       uses: docker/login-action@v4
