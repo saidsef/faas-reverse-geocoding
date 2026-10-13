@@ -29,9 +29,6 @@ spec:
       - name: geocode
         image: ghcr.io/saidsef/faas-reverse-geocoding:latest
         imagePullPolicy: Always
-        env:
-          - name: "PORT"
-            value: "8080"
         securityContext:
           runAsNonRoot: true
           runAsGroup: 65534
