@@ -4,3 +4,6 @@ build
 
 # Ignore DevSpace cache and log folder
 .devspace/
+
+# MkDocs build output
+site/
