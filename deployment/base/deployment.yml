@@ -59,7 +59,7 @@ spec:
           exec:
             command:
               - pgrep
-              - geocode
+              - faas-reverse-geocoding
           initialDelaySeconds: 5
           periodSeconds: 30
           failureThreshold: 2
