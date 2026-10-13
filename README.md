@@ -1,7 +1,6 @@
 # Reverse Geocoding
 
 [![CI](https://github.com/saidsef/faas-reverse-geocoding/actions/workflows/ci.yml/badge.svg)](https://github.com/saidsef/faas-reverse-geocoding/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/saidsef/faas-reverse-geocoding)](https://goreportcard.com/report/github.com/saidsef/faas-reverse-geocoding)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/saidsef/faas-reverse-geocoding)
 [![GoDoc](https://godoc.org/github.com/saidsef/faas-reverse-geocoding?status.svg)](https://pkg.go.dev/github.com/saidsef/faas-reverse-geocoding?tab=doc)
 ![GitHub release(latest by date)](https://img.shields.io/github/v/release/saidsef/faas-reverse-geocoding)
