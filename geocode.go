@@ -41,7 +41,7 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 func main() {
 	flag.IntVar(&port, "port", 8080, "HTTP listening PORT")
 	flag.BoolVar(&verbose, "verbose", false, "Enable verbose logging")
-	flag.IntVar(&cache, "cache", 60, "Cache duration minutes (default 30)")
+	flag.IntVar(&cache, "cache", 60, "Cache duration in minutes")
 	flag.Parse()
 
 	// Set the verbosity level in the utils package

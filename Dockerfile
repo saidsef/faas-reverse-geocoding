@@ -9,14 +9,14 @@ RUN apk add --no-cache curl git && \
 
 FROM docker.io/alpine:3.24
 LABEL maintainer="Said Sef <saidsef@gmail.com> (saidsef.co.uk/)"
-ENV PORT=${PORT:-8080}
 
 USER nobody
 
 COPY --from=builder /app/faas-reverse-geocoding /usr/bin/
 
-HEALTHCHECK --interval=60s --timeout=10s CMD curl --fail 'http://localhost:${PORT}/' || exit 1
+# The final image has busybox wget but no curl.
+HEALTHCHECK --interval=60s --timeout=10s CMD wget -q -O /dev/null http://localhost:8080/ || exit 1
 
-EXPOSE ${PORT}
+EXPOSE 8080
 
 CMD ["/usr/bin/faas-reverse-geocoding"]
