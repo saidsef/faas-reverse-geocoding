@@ -7,7 +7,7 @@ build:
   jobs:
     install:
       # Read the Docs wraps each job in /bin/sh -c '...', so single quotes here break out of it.
-      - pip install "mkdocs>=1.6,<2" "mkdocs-material>=9.5" "pygments>=2.18" "pymdown-extensions>=10.7"
+      - pip install "mkdocs>=1.6,<2" "mkdocs-material>=9.5" "pygments>=2.18" "pymdown-extensions>=10.7" "certifi>=2026.10.19"
 
 mkdocs:
   configuration: mkdocs.yml
